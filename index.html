@@ -1,0 +1,1747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verdana — Fine Dining</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#f9f7f2;--white:#fff;--sage:#7a9e7e;--sage-light:#c8dbc9;
+  --sage-dark:#3d5c41;--sage-pale:#eef4ee;--charcoal:#2c2c2a;
+  --muted:#6b7280;--border:#dde8de;--gold:#b5924a;--red:#a32d2d;
+  --fd:'Cormorant Garamond',Georgia,serif;--fb:'Jost',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--cream);color:var(--charcoal);font-size:16px;line-height:1.7;overflow-x:hidden}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(249,247,242,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;gap:1rem}
+.nav-logo{font-family:var(--fd);font-size:1.6rem;font-weight:300;letter-spacing:.12em;color:var(--sage-dark);cursor:pointer;white-space:nowrap}
+.nav-logo span{color:var(--gold)}
+.nav-links{display:flex;gap:1.1rem;list-style:none;flex-wrap:nowrap}
+.nav-links a{font-size:.71rem;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;color:var(--muted);transition:color .2s;white-space:nowrap}
+.nav-links a:hover{color:var(--sage-dark)}
+.nav-book{background:var(--sage-dark);color:#fff;border:none;padding:.5rem 1.1rem;font-family:var(--fb);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s;white-space:nowrap}
+.nav-book:hover{background:var(--sage)}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-top:64px}
+.page.active{display:block}
+
+/* ── HOME ── */
+.hero{height:calc(100vh - 64px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+  background:linear-gradient(to bottom,rgba(249,247,242,.1),rgba(249,247,242,.82)),
+  url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1600&q=80') center/cover no-repeat}
+.hero-badge{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--sage);margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem}
+.hero-badge::before,.hero-badge::after{content:'';display:block;width:40px;height:1px;background:var(--sage-light)}
+.hero h1{font-family:var(--fd);font-size:clamp(3rem,8vw,7rem);font-weight:300;line-height:1;color:var(--charcoal);letter-spacing:.04em}
+.hero h1 em{font-style:italic;color:var(--sage-dark)}
+.hero-sub{margin-top:1.5rem;font-size:1rem;color:var(--muted);font-weight:300}
+.hero-ctas{margin-top:2.5rem;display:flex;gap:1rem}
+.btn-p{background:var(--sage-dark);color:#fff;border:none;padding:.85rem 2.2rem;font-family:var(--fb);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+.btn-p:hover{background:var(--sage)}
+.btn-o{background:transparent;color:var(--sage-dark);border:1px solid var(--sage-dark);padding:.85rem 2.2rem;font-family:var(--fb);font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s}
+.btn-o:hover{background:var(--sage-pale)}
+.sec{padding:5rem 3rem}
+.sec-label{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--sage);margin-bottom:.75rem}
+.sec-title{font-family:var(--fd);font-size:clamp(1.8rem,4vw,3rem);font-weight:300;color:var(--charcoal);line-height:1.2}
+.sec-title em{font-style:italic;color:var(--sage-dark)}
+.hi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3rem;margin-top:3rem}
+.hi-card{text-align:center}
+.hi-ico{width:56px;height:56px;border-radius:50%;background:var(--sage-pale);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:1.4rem}
+.hi-card h3{font-family:var(--fd);font-size:1.3rem;font-weight:400;margin-bottom:.5rem}
+.hi-card p{font-size:.9rem;color:var(--muted)}
+.about-split{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center;max-width:1100px;margin:0 auto}
+.about-img{aspect-ratio:4/5;object-fit:cover;width:100%;border-radius:2px}
+.about-text p{color:var(--muted);margin:1rem 0 1.5rem;line-height:1.9}
+.about-stat{display:flex;gap:3rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.stat-num{font-family:var(--fd);font-size:2.5rem;font-weight:300;color:var(--sage-dark)}
+.stat-lbl{font-size:.75rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+
+/* ── PAGE HERO ── */
+.page-hero{background:var(--sage-pale);padding:4rem 3rem 3rem;text-align:center;border-bottom:1px solid var(--border)}
+
+/* ── MENU PAGE ── */
+.menu-tabs{margin-top:2rem;border:1px solid var(--border);display:inline-flex;background:var(--white)}
+.menu-tab{padding:.6rem 1.5rem;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border:none;background:transparent;font-family:var(--fb);color:var(--muted);transition:all .2s;border-right:1px solid var(--border)}
+.menu-tab:last-child{border-right:none}
+.menu-tab.active{background:var(--sage-dark);color:#fff}
+.menu-content{padding:3rem;max-width:960px;margin:0 auto}
+.menu-cat{display:none}
+.menu-cat.active{display:block}
+.menu-cat-title{font-family:var(--fd);font-size:1.8rem;font-weight:300;font-style:italic;color:var(--sage-dark);margin-bottom:2rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.menu-items{display:grid;gap:1.25rem}
+.menu-item{display:flex;justify-content:space-between;align-items:flex-start;padding:1.25rem;border:1px solid var(--border);background:var(--cream);gap:1rem}
+.menu-item-img{width:90px;height:90px;object-fit:cover;border-radius:2px;flex-shrink:0;cursor:pointer;transition:transform .3s}
+.menu-item-img:hover{transform:scale(1.04)}
+.menu-item-img-placeholder{width:90px;height:90px;background:var(--border);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--muted);text-align:center;letter-spacing:.04em}
+.menu-item-info{flex:1}
+.menu-item-info h4{font-family:var(--fd);font-size:1.1rem;font-weight:400;margin-bottom:.2rem}
+.menu-item-info p{font-size:.84rem;color:var(--muted)}
+.menu-item-tags{display:flex;gap:.4rem;margin-top:.4rem;flex-wrap:wrap}
+.tag{font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:2px}
+.tag-veg{background:#eaf3de;color:#3b6d11}
+.tag-gf{background:#eef4ee;color:#3d5c41}
+.tag-sig{background:#faeeda;color:#854f0b}
+.menu-price{font-family:var(--fd);font-size:1.2rem;color:var(--gold);white-space:nowrap}
+
+/* ── GALLERY ── */
+.gallery-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:2.5rem 3rem}
+.g-item{overflow:hidden;position:relative;cursor:pointer;background:#d8e8da}
+.g-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.g-item:hover img{transform:scale(1.05)}
+.g-item{height:260px}
+.g-item.tall{grid-row:span 2;height:auto;min-height:534px}
+.g-item.wide{grid-column:span 2}
+.g-overlay{position:absolute;inset:0;background:rgba(61,92,65,0);display:flex;align-items:flex-end;padding:1rem;transition:background .3s}
+.g-item:hover .g-overlay{background:rgba(61,92,65,.38)}
+.g-cap{color:#fff;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:0;transform:translateY(8px);transition:all .3s}
+.g-item:hover .g-cap{opacity:1;transform:translateY(0)}
+
+/* ── LIGHTBOX ── */
+.lightbox{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.9);align-items:center;justify-content:center}
+.lightbox.open{display:flex}
+.lightbox img{max-width:90vw;max-height:88vh;object-fit:contain}
+.lb-close{position:absolute;top:1.5rem;right:2rem;color:#fff;font-size:2rem;cursor:pointer;background:none;border:none;line-height:1}
+
+/* ── BOOKING ── */
+.bk-container{max-width:680px;margin:3rem auto;padding:0 2rem 4rem}
+.bk-form{background:var(--white);padding:2.5rem;border:1px solid var(--border)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem}
+.fg{margin-bottom:1.25rem}
+.fg label{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.fg input,.fg select,.fg textarea{width:100%;padding:.7rem .9rem;border:1px solid var(--border);background:var(--cream);font-family:var(--fb);font-size:.93rem;color:var(--charcoal);outline:none;transition:border-color .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--sage)}
+.fg select{appearance:none;cursor:pointer}
+.guests-sec{background:var(--sage-pale);border:1px solid var(--border);padding:1.25rem;margin-bottom:1.25rem}
+.guests-sec-title{font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem}
+.g-row{display:flex;align-items:center;justify-content:space-between;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.g-row:last-child{border-bottom:none;padding-bottom:0}
+.g-row-info strong{display:block;font-size:.88rem}
+.g-row-info span{font-size:.75rem;color:var(--muted)}
+.counter{display:flex;align-items:center;gap:.75rem}
+.cnt-btn{width:30px;height:30px;border:1px solid var(--border);background:var(--cream);font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;line-height:1}
+.cnt-btn:hover{border-color:var(--sage);background:var(--sage-pale)}
+.cnt-val{font-size:1rem;min-width:22px;text-align:center;font-weight:500}
+.fs-title{font-family:var(--fd);font-size:1rem;color:var(--sage-dark);margin:1.5rem 0 1rem;padding-top:1.25rem;border-top:1px solid var(--border)}
+/* slot grid */
+.slot-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:1.25rem}
+.slot-card{border:1px solid var(--border);background:var(--cream);cursor:pointer;padding:.6rem .5rem;text-align:center;transition:all .2s;position:relative}
+.slot-card:hover:not(.slot-filled){border-color:var(--sage);background:var(--sage-pale)}
+.slot-card.slot-selected{background:var(--sage-dark);color:#fff;border-color:var(--sage-dark)}
+.slot-card.slot-filled{background:#f5f5f5;cursor:not-allowed;opacity:.6}
+.slot-time{font-size:.84rem;font-weight:500;display:block}
+.slot-avail{font-size:.68rem;letter-spacing:.04em;margin-top:2px;display:block}
+.slot-card:not(.slot-filled):not(.slot-selected) .slot-avail{color:var(--sage-dark)}
+.slot-card.slot-selected .slot-avail{color:rgba(255,255,255,.8)}
+.slot-card.slot-filled .slot-avail{color:#bbb}
+.slot-legend{display:flex;gap:1.5rem;font-size:.73rem;color:var(--muted);margin-bottom:1rem}
+.slot-legend span{display:flex;align-items:center;gap:.4rem}
+.ldot{width:10px;height:10px;border-radius:50%}
+.submit-btn{width:100%;padding:1rem;background:var(--sage-dark);color:#fff;border:none;font-family:var(--fb);font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;margin-top:1rem;transition:background .2s}
+.submit-btn:hover{background:var(--sage)}
+.confirm-box{display:none;background:var(--sage-pale);border:1px solid var(--sage-light);padding:2rem;text-align:center;margin-top:1.5rem}
+.confirm-box.show{display:block}
+.confirm-ref{margin-top:1rem;padding:.6rem 1.2rem;background:var(--white);border:1px solid var(--border);display:inline-block;font-family:var(--fd);font-size:1.1rem;color:var(--sage-dark);letter-spacing:.1em}
+.privacy-note{margin-top:1rem;padding:.8rem 1rem;background:#fff8f0;border:1px solid #f0d8b5;font-size:.8rem;color:#7a5c2e;line-height:1.6;border-radius:2px}
+
+/* ── CONTACT ── */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;max-width:900px;margin:4rem auto;padding:0 3rem}
+.cc{padding:2rem;border:1px solid var(--border);background:var(--cream)}
+.cc h3{font-family:var(--fd);font-size:1.3rem;margin-bottom:1.25rem;color:var(--sage-dark);font-weight:400}
+.ci{display:flex;gap:1rem;margin-bottom:1rem}
+.ci-ico{width:36px;height:36px;border-radius:50%;background:var(--sage-pale);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.ci-txt strong{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hrs-row{display:flex;justify-content:space-between;font-size:.88rem;padding:.5rem 0;border-bottom:1px solid var(--border)}
+.hrs-row:last-child{border-bottom:none}
+.hrs-row span:last-child{color:var(--sage-dark)}
+
+/* ── CAREERS ── */
+.careers-wrap{max-width:900px;margin:3rem auto;padding:0 3rem 5rem}
+.careers-intro{font-size:.95rem;color:var(--muted);max-width:600px;margin:0 auto 3rem;text-align:center;line-height:1.9}
+.job-card{border:1px solid var(--border);background:var(--cream);padding:1.75rem;margin-bottom:1.25rem;transition:border-color .2s}
+.job-card:hover{border-color:var(--sage)}
+.job-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem}
+.job-title{font-family:var(--fd);font-size:1.3rem;margin-bottom:.25rem}
+.job-meta{display:flex;gap:.6rem;flex-wrap:wrap}
+.jtag{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:2px}
+.jt-dept{background:var(--sage-pale);color:var(--sage-dark)}
+.jt-type{background:#eaf3de;color:#3b6d11}
+.jt-loc{background:#faeeda;color:#854f0b}
+.job-desc{font-size:.86rem;color:var(--muted);line-height:1.8;margin-bottom:1rem}
+.job-apply{padding:.55rem 1.4rem;background:var(--sage-dark);color:#fff;border:none;font-family:var(--fb);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s}
+.job-apply:hover{background:var(--sage)}
+.no-jobs{text-align:center;padding:3rem;color:var(--muted);border:1px dashed var(--border)}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--white);max-width:540px;width:90%;padding:2.5rem;border:1px solid var(--border);max-height:90vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:1rem;right:1.25rem;background:none;border:none;font-size:1.5rem;cursor:pointer;color:var(--muted);line-height:1}
+.apply-success{display:none;text-align:center;padding:2rem 0}
+.apply-success.show{display:block}
+
+/* ── ADMIN ── */
+.admin-login{min-height:calc(100vh - 64px);display:flex;align-items:center;justify-content:center}
+.admin-login-box{background:var(--white);padding:3rem;border:1px solid var(--border);width:380px;text-align:center}
+.admin-login-box h2{font-family:var(--fd);font-size:1.8rem;font-weight:300;color:var(--sage-dark)}
+.admin-login-box p{font-size:.85rem;color:var(--muted);margin:.25rem 0 2rem}
+.admin-login-box input{width:100%;padding:.7rem .9rem;margin-bottom:1rem;border:1px solid var(--border);background:var(--cream);font-family:var(--fb);font-size:.95rem}
+.adm-err{color:var(--red);font-size:.82rem;margin-bottom:.75rem;display:none}
+.adm-dash{padding:2rem 2.5rem}
+.adm-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid var(--border)}
+.adm-header h2{font-family:var(--fd);font-size:1.8rem;color:var(--sage-dark);font-weight:300}
+.adm-tabs{display:inline-flex;border:1px solid var(--border);background:var(--white);margin-bottom:2rem;flex-wrap:wrap}
+.adm-tab{padding:.55rem 1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:none;background:transparent;font-family:var(--fb);color:var(--muted);cursor:pointer;border-right:1px solid var(--border);transition:all .2s}
+.adm-tab:last-child{border-right:none}
+.adm-tab.active{background:var(--sage-dark);color:#fff}
+.adm-sec{display:none}
+.adm-sec.active{display:block}
+.adm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+.adm-stat{background:var(--white);border:1px solid var(--border);padding:1.25rem;text-align:center}
+.adm-stat-num{font-family:var(--fd);font-size:2.2rem;color:var(--sage-dark)}
+.adm-stat-lbl{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.filter-row{display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.fbtn{padding:.42rem 1rem;font-size:.71rem;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--border);background:var(--white);cursor:pointer;font-family:var(--fb);color:var(--muted);transition:all .2s}
+.fbtn.active{background:var(--sage-dark);color:#fff;border-color:var(--sage-dark)}
+.dt{width:100%;border-collapse:collapse;background:var(--white)}
+.dt th{text-align:left;padding:.8rem 1rem;font-size:.67rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);background:var(--sage-pale);border-bottom:1px solid var(--border)}
+.dt td{padding:.85rem 1rem;font-size:.85rem;border-bottom:1px solid var(--border);vertical-align:top}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:var(--sage-pale)}
+.badge{display:inline-block;padding:3px 10px;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;border-radius:2px}
+.bp{background:#faeeda;color:#854f0b}.bc{background:#eaf3de;color:#3b6d11}
+.bf{background:#f1efe8;color:#5f5e5a}.br{background:#fcebeb;color:#a32d2d}
+.bn{background:#faeeda;color:#854f0b}.bs{background:#eaf3de;color:#3b6d11}
+.ab{padding:.32rem .8rem;font-size:.69rem;letter-spacing:.06em;border:1px solid;cursor:pointer;font-family:var(--fb);margin-right:.3rem;transition:all .2s;white-space:nowrap}
+.ag{border-color:var(--sage);color:var(--sage-dark);background:#fff}.ag:hover{background:var(--sage-pale)}
+.aa{border-color:var(--gold);color:var(--gold);background:#fff}.aa:hover{background:#fdf7ee}
+.ar{border-color:var(--red);color:var(--red);background:#fff}.ar:hover{background:#fdf2f2}
+.logout-btn{padding:.45rem 1.1rem;background:none;border:1px solid var(--border);font-family:var(--fb);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;color:var(--muted);transition:all .2s}
+.logout-btn:hover{border-color:var(--muted);color:var(--charcoal)}
+.empty-st{text-align:center;padding:3rem;color:var(--muted);background:var(--white);border:1px solid var(--border)}
+
+/* ── MENU EDITOR ── */
+.med-wrap{background:var(--white);border:1px solid var(--border)}
+.med-tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto}
+.med-tab{padding:.7rem 1.2rem;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;border:none;background:transparent;font-family:var(--fb);color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.med-tab.active{color:var(--sage-dark);border-bottom-color:var(--sage-dark)}
+.med-hdr{display:grid;grid-template-columns:80px 1.5fr 2.5fr 90px 120px 1fr auto;gap:.5rem;padding:.55rem 1rem;background:var(--sage-pale);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.med-row{display:grid;grid-template-columns:80px 1.5fr 2.5fr 90px 120px 1fr auto;gap:.5rem;padding:.75rem 1rem;border-bottom:1px solid var(--border);align-items:center}
+.med-row:last-child{border-bottom:none}
+.med-row input,.med-row select{padding:.35rem .5rem;border:1px solid var(--border);font-family:var(--fb);font-size:.8rem;background:var(--cream);width:100%}
+.med-row input:focus,.med-row select:focus{outline:none;border-color:var(--sage)}
+.med-thumb{width:70px;height:70px;object-fit:cover;border-radius:2px;border:1px solid var(--border)}
+.med-thumb-ph{width:70px;height:70px;background:var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--muted);text-align:center;cursor:pointer;border:1px dashed var(--sage-light)}
+.med-thumb-ph:hover{background:var(--sage-pale)}
+.img-input{display:none}
+.msave{padding:.35rem .7rem;background:var(--sage-dark);color:#fff;border:none;font-family:var(--fb);font-size:.67rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+.mdel{padding:.35rem .55rem;background:none;border:1px solid var(--border);color:var(--red);cursor:pointer}
+.mdel:hover{border-color:var(--red)}
+.add-row{display:grid;grid-template-columns:80px 1.5fr 2.5fr 90px 120px 1fr auto;gap:.5rem;padding:1rem;background:var(--sage-pale);border-top:2px solid var(--border);align-items:end}
+.add-row label{font-size:.63rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.3rem}
+.add-row input,.add-row select{padding:.4rem .5rem;border:1px solid var(--border);font-family:var(--fb);font-size:.8rem;background:var(--white);width:100%}
+.add-row button{padding:.4rem .8rem;background:var(--sage-dark);color:#fff;border:none;font-family:var(--fb);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase;cursor:pointer;height:34px;align-self:end}
+
+/* ── SLOT MANAGER ── */
+.slot-mgr{background:var(--white);border:1px solid var(--border)}
+.slot-mgr-hdr{padding:1rem 1.5rem;border-bottom:1px solid var(--border);font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--sage-pale)}
+.slot-mgr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.slot-mgr-item{padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);border-right:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.slot-mgr-item:nth-child(3n){border-right:none}
+.slot-mgr-time{font-size:.9rem;font-weight:500}
+.slot-mgr-controls{display:flex;align-items:center;gap:.6rem}
+.slot-num-input{width:52px;padding:.35rem .5rem;border:1px solid var(--border);font-family:var(--fb);font-size:.88rem;text-align:center;background:var(--cream)}
+.slot-num-input:focus{outline:none;border-color:var(--sage)}
+.slot-status-toggle{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:var(--muted);cursor:pointer;white-space:nowrap}
+.slot-status-toggle input{accent-color:var(--red);cursor:pointer}
+.slot-save-row{padding:1rem 1.5rem;background:var(--sage-pale);border-top:1px solid var(--border);display:flex;justify-content:flex-end}
+
+/* ── HOURS EDITOR ── */
+.hrs-editor{background:var(--white);border:1px solid var(--border)}
+.hrs-adm-row{display:grid;grid-template-columns:130px 1fr 1fr auto;gap:1.25rem;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid var(--border)}
+.hrs-adm-row:last-child{border-bottom:none}
+.hrs-day{font-size:.88rem;font-weight:500}
+.fl{font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:.3rem}
+.hrs-adm-row input[type=time]{padding:.4rem .6rem;border:1px solid var(--border);font-family:var(--fb);font-size:.88rem;background:var(--cream);width:100%}
+.hrs-adm-row input[type=time]:focus{outline:none;border-color:var(--sage)}
+.closed-tog{display:flex;align-items:center;gap:.45rem;font-size:.8rem;color:var(--muted);cursor:pointer;white-space:nowrap}
+.closed-tog input{accent-color:var(--red);cursor:pointer}
+.hrs-save-foot{padding:1rem 1.5rem;background:var(--sage-pale);border-top:1px solid var(--border);display:flex;justify-content:flex-end}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--sage-dark);color:#fff;padding:.75rem 1.75rem;font-size:.8rem;letter-spacing:.05em;z-index:500;transition:transform .3s;border-radius:2px}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── ADD JOB FORM ── */
+.add-job-form{background:var(--white);border:1px solid var(--border);padding:1.5rem;margin-bottom:1.5rem}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo" onclick="go('home')">Verd<span>a</span>na</div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="go('home')">Home</a></li>
+    <li><a href="#" onclick="go('menu')">Menu</a></li>
+    <li><a href="#" onclick="go('gallery')">Gallery</a></li>
+    <li><a href="#" onclick="go('booking')">Reservations</a></li>
+    <li><a href="#" onclick="go('contact')">Contact</a></li>
+    <li><a href="#" onclick="go('careers')">Careers</a></li>
+    <li><a href="#" onclick="go('admin')" style="color:var(--sage-dark);font-weight:500">Admin</a></li>
+  </ul>
+  <button class="nav-book" onclick="go('booking')">Reserve a Table</button>
+</nav>
+
+<!-- ══════════════ HOME ══════════════ -->
+<div id="page-home" class="page active">
+  <div class="hero">
+    <div class="hero-badge">Est. 2019 · Hyderabad</div>
+    <h1>Where <em>Nature</em><br>Meets the Table</h1>
+    <p class="hero-sub">Seasonal menus, curated wines, and unhurried evenings</p>
+    <div class="hero-ctas">
+      <button class="btn-p" onclick="go('booking')">Reserve a Table</button>
+      <button class="btn-o" onclick="go('menu')">Explore Menu</button>
+    </div>
+  </div>
+  <div class="sec" style="background:var(--white);text-align:center">
+    <div class="sec-label">Why Verdana</div>
+    <div class="sec-title">An <em>Uncompromising</em> Experience</div>
+    <div class="hi-grid">
+      <div class="hi-card"><div class="hi-ico">🌿</div><h3>Farm to Fork</h3><p>Ingredients from curated local farms and artisan producers every morning.</p></div>
+      <div class="hi-card"><div class="hi-ico">🍷</div><h3>Sommelier-Curated</h3><p>A cellar of 200+ wines, paired to each dish by our resident sommelier.</p></div>
+      <div class="hi-card"><div class="hi-ico">🏛️</div><h3>Private Dining</h3><p>Intimate rooms for corporate events and celebrations up to 30 guests.</p></div>
+    </div>
+  </div>
+  <div class="sec about-split">
+    <div><img class="about-img" src="https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?w=800&q=80" alt="Interior"/></div>
+    <div class="about-text">
+      <div class="sec-label">Our Story</div>
+      <div class="sec-title">A Labour of <em>Love</em></div>
+      <p>Verdana was born from a simple belief — that exceptional food should be paired with an equally exceptional atmosphere. Our head chef brings two decades of Michelin-starred experience to every plate, blending classical French technique with the bold flavours of South India.</p>
+      <p>Every dish is a conversation between tradition and the season. We change our menu quarterly.</p>
+      <div class="about-stat">
+        <div><div class="stat-num">14</div><div class="stat-lbl">Awards</div></div>
+        <div><div class="stat-num">200+</div><div class="stat-lbl">Wines</div></div>
+        <div><div class="stat-num">5★</div><div class="stat-lbl">Rating</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MENU ══════════════ -->
+<div id="page-menu" class="page" style="background:var(--white)">
+  <div class="page-hero">
+    <div class="sec-label">Verdana Kitchen</div>
+    <div class="sec-title" style="margin-bottom:1.5rem">Seasonal <em>Menu</em></div>
+    <div class="menu-tabs" id="pub-menu-tabs"></div>
+  </div>
+  <div class="menu-content" id="pub-menu-body"></div>
+</div>
+
+<!-- ══════════════ GALLERY ══════════════ -->
+<div id="page-gallery" class="page" style="background:var(--cream)">
+  <div class="page-hero" style="background:var(--white)">
+    <div class="sec-label">Visual Story</div>
+    <div class="sec-title">The <em>Verdana</em> Experience</div>
+  </div>
+  <div class="gallery-grid" id="gallery-grid">
+    <!-- filled by JS so images always render correctly -->
+  </div>
+</div>
+<div class="lightbox" id="lightbox" onclick="closeLB()">
+  <button class="lb-close" onclick="closeLB()">×</button>
+  <img id="lb-img" src="" alt="" onclick="event.stopPropagation()"/>
+</div>
+
+<!-- ══════════════ BOOKING ══════════════ -->
+<div id="page-booking" class="page" style="background:var(--sage-pale)">
+  <div class="page-hero" style="background:var(--white)">
+    <div class="sec-label">Reservations</div>
+    <div class="sec-title">Reserve Your <em>Table</em></div>
+    <p style="color:var(--muted);margin-top:.5rem;font-size:.9rem">We recommend booking at least 48 hours in advance</p>
+  </div>
+  <div class="bk-container">
+    <div class="bk-form" id="bk-form-wrap">
+      <div class="sec-label" style="margin-bottom:1rem">Reservation Details</div>
+      <div class="form-row">
+        <div class="fg"><label>Date</label><input type="date" id="bk-date"/></div>
+        <div class="fg"><label>Occasion (optional)</label>
+          <select id="bk-occasion"><option value="">— None —</option><option>Birthday</option><option>Anniversary</option><option>Business Dinner</option><option>Proposal</option><option>Other</option></select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>Guest Breakdown</label>
+        <div class="guests-sec">
+          <div class="guests-sec-title">How many guests in each group?</div>
+          <div class="g-row">
+            <div class="g-row-info"><strong>Adults</strong><span>Age 13 and above</span></div>
+            <div class="counter"><button class="cnt-btn" onclick="chg('adults',-1)">−</button><span class="cnt-val" id="cnt-adults">2</span><button class="cnt-btn" onclick="chg('adults',1)">+</button></div>
+          </div>
+          <div class="g-row">
+            <div class="g-row-info"><strong>Children</strong><span>Age 4–12 · Children's menu available</span></div>
+            <div class="counter"><button class="cnt-btn" onclick="chg('children',-1)">−</button><span class="cnt-val" id="cnt-children">0</span><button class="cnt-btn" onclick="chg('children',1)">+</button></div>
+          </div>
+          <div class="g-row">
+            <div class="g-row-info"><strong>Infants</strong><span>Under 4 · High chairs on request</span></div>
+            <div class="counter"><button class="cnt-btn" onclick="chg('infants',-1)">−</button><span class="cnt-val" id="cnt-infants">0</span><button class="cnt-btn" onclick="chg('infants',1)">+</button></div>
+          </div>
+        </div>
+        <div id="child-note" style="display:none;font-size:.81rem;color:var(--sage-dark);padding:.6rem .9rem;background:var(--sage-pale);border:1px solid var(--sage-light)">🍃 Children's menu offers smaller portions of our seasonal dishes.</div>
+      </div>
+      <div class="fg">
+        <label>Select a Time Slot</label>
+        <div class="slot-legend">
+          <span><div class="ldot" style="background:var(--sage-light)"></div>Available</span>
+          <span><div class="ldot" style="background:#ddd"></div>Filled</span>
+          <span><div class="ldot" style="background:var(--sage-dark)"></div>Selected</span>
+        </div>
+        <div class="slot-grid" id="slot-grid"></div>
+      </div>
+      <div class="fs-title">Contact Information</div>
+      <div class="form-row">
+        <div class="fg"><label>First Name</label><input type="text" id="bk-fname" placeholder="Arjun"/></div>
+        <div class="fg"><label>Last Name</label><input type="text" id="bk-lname" placeholder="Reddy"/></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Email</label><input type="email" id="bk-email" placeholder="you@email.com"/></div>
+        <div class="fg"><label>Phone</label><input type="tel" id="bk-phone" placeholder="+91 98765 43210"/></div>
+      </div>
+      <div class="fg"><label>Special Requests</label><textarea id="bk-notes" rows="3" placeholder="Dietary requirements, high chair, allergies…" style="resize:vertical"></textarea></div>
+      <div id="bk-error" style="color:var(--red);font-size:.82rem;margin-bottom:.5rem;display:none"></div>
+      <button class="submit-btn" onclick="submitBooking()">Confirm Reservation</button>
+      <div class="privacy-note">🔒 <strong>Privacy notice:</strong> Your personal details (name, email, phone) will be permanently deleted from our records once your visit is complete and the reservation is closed by our team.</div>
+    </div>
+    <div class="confirm-box" id="confirm-box">
+      <div style="font-size:2.5rem;margin-bottom:.75rem">✓</div>
+      <div style="font-family:var(--fd);font-size:1.5rem;color:var(--sage-dark);margin-bottom:.5rem;font-weight:300">Reservation Requested!</div>
+      <p style="font-size:.9rem;color:var(--muted)">Thank you, <strong id="cn-name"></strong>. Your table for <strong id="cn-details"></strong> has been received. We'll confirm via email to <strong id="cn-email"></strong> within 2 hours.</p>
+      <div class="confirm-ref" id="cn-ref">VRD-0000</div>
+      <div class="privacy-note" style="margin-top:1.25rem;text-align:left">🔒 <strong>Data privacy:</strong> Your personal information will be permanently deleted from our system once your visit is complete and marked closed by our team. We do not share your data with third parties.</div>
+      <p style="font-size:.78rem;color:var(--muted);margin-top:1rem">Questions? Call +91 40 2345 6789</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CONTACT ══════════════ -->
+<div id="page-contact" class="page" style="background:var(--white)">
+  <div class="page-hero"><div class="sec-label">Find Us</div><div class="sec-title">Contact <em>Verdana</em></div></div>
+  <div class="contact-grid">
+    <div>
+      <div class="cc" style="margin-bottom:1.5rem">
+        <h3>Get in Touch</h3>
+        <div class="ci"><div class="ci-ico">📍</div><div class="ci-txt"><strong>Address</strong><span>12, Jubilee Hills Road No. 36,<br>Hyderabad, Telangana 500033</span></div></div>
+        <div class="ci"><div class="ci-ico">📞</div><div class="ci-txt"><strong>Phone</strong><span>+91 40 2345 6789</span></div></div>
+        <div class="ci"><div class="ci-ico">✉️</div><div class="ci-txt"><strong>Email</strong><span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="196b7c6a7c6b6f786d7076776a596f7c6b7d787778377077">[email&#160;protected]</a></span></div></div>
+      </div>
+      <div class="cc">
+        <h3>Private Events</h3>
+        <div class="ci"><div class="ci-ico">👤</div><div class="ci-txt"><strong>Events Manager</strong><span>Priya Nair · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a3c6d5c6cdd7d0e3d5c6d1c7c2cdc28dcacd">[email&#160;protected]</a></span></div></div>
+      </div>
+    </div>
+    <div class="cc">
+      <h3>Opening Hours</h3>
+      <div id="pub-hours"></div>
+      <div style="margin-top:1.25rem;padding:1rem;background:var(--sage-pale);border:1px solid var(--border);font-size:.85rem;color:var(--muted)">Reservations strongly recommended.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CAREERS ══════════════ -->
+<div id="page-careers" class="page" style="background:var(--white)">
+  <div class="page-hero"><div class="sec-label">Join the Team</div><div class="sec-title">Careers at <em>Verdana</em></div></div>
+  <div class="careers-wrap">
+    <p class="careers-intro">We believe great dining starts with great people. We're always looking for passionate individuals who share our commitment to excellence, hospitality, and craft.</p>
+    <div id="jobs-list"></div>
+  </div>
+</div>
+
+<!-- Apply Modal -->
+<div class="modal-bg" id="apply-modal-bg" onclick="closeApply(event)">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeApply()">×</button>
+    <h3 style="font-family:var(--fd);font-size:1.5rem;color:var(--sage-dark);font-weight:300" id="apply-title"></h3>
+    <div style="font-size:.82rem;color:var(--muted);margin:.25rem 0 1.75rem" id="apply-sub"></div>
+    <div id="apply-form">
+      <div class="form-row">
+        <div class="fg"><label>First Name</label><input type="text" id="ap-fname" placeholder="Priya"/></div>
+        <div class="fg"><label>Last Name</label><input type="text" id="ap-lname" placeholder="Sharma"/></div>
+      </div>
+      <div class="fg"><label>Email</label><input type="email" id="ap-email" placeholder="you@email.com"/></div>
+      <div class="fg"><label>Phone</label><input type="tel" id="ap-phone" placeholder="+91 98765 43210"/></div>
+      <div class="fg"><label>Years of Experience</label><input type="text" id="ap-exp" placeholder="e.g. 3 years in fine dining"/></div>
+      <div class="fg"><label>Cover Note</label><textarea id="ap-note" rows="4" placeholder="Why you'd be great at Verdana…" style="resize:vertical;width:100%;padding:.7rem;border:1px solid var(--border);background:var(--cream);font-family:var(--fb);font-size:.88rem"></textarea></div>
+      <div id="ap-error" style="color:var(--red);font-size:.82rem;margin-bottom:.5rem;display:none"></div>
+      <button class="submit-btn" onclick="submitApp()">Submit Application</button>
+    </div>
+    <div class="apply-success" id="apply-success">
+      <div style="font-size:2rem;margin-bottom:.75rem">✓</div>
+      <div style="font-family:var(--fd);font-size:1.5rem;color:var(--sage-dark);font-weight:300">Application Received!</div>
+      <p style="font-size:.9rem;color:var(--muted);margin-top:.5rem">We'll review your application and be in touch within 5–7 business days.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ ADMIN ══════════════ -->
+<div id="page-admin" class="page" style="background:var(--cream)">
+  <div class="admin-login" id="adm-login">
+    <div class="admin-login-box">
+      <h2>Admin Panel</h2>
+      <p>Manage reservations, menu, hours and more</p>
+      <input type="text" id="adm-user" placeholder="Username"/>
+      <input type="password" id="adm-pass" placeholder="Password" onkeydown="if(event.key==='Enter')adminLogin()"/>
+      <div class="adm-err" id="adm-err">Invalid credentials. Try admin / verdana2024</div>
+      <button class="submit-btn" onclick="adminLogin()">Sign In</button>
+      <p style="font-size:.75rem;color:var(--muted);margin-top:1rem">Demo: admin / verdana2024</p>
+    </div>
+  </div>
+  <div class="adm-dash" id="adm-dash" style="display:none">
+    <div class="adm-header">
+      <h2>Verdana Admin</h2>
+      <button class="logout-btn" onclick="adminLogout()">Sign Out</button>
+    </div>
+    <div class="adm-tabs">
+      <button class="adm-tab active" onclick="admTab('bookings',this)">Reservations</button>
+      <button class="adm-tab" onclick="admTab('menu-editor',this)">Menu Editor</button>
+      <button class="adm-tab" onclick="admTab('slot-manager',this)">Slot Manager</button>
+      <button class="adm-tab" onclick="admTab('hours-editor',this)">Opening Hours</button>
+      <button class="adm-tab" onclick="admTab('gallery-editor',this)">Gallery</button>
+      <button class="adm-tab" onclick="admTab('contact-editor',this)">Contact Info</button>
+      <button class="adm-tab" onclick="admTab('applications',this)">Applications</button>
+    </div>
+
+    <!-- RESERVATIONS -->
+    <div class="adm-sec active" id="adm-bookings">
+      <div class="adm-stats" id="adm-stats"></div>
+      <div class="filter-row">
+        <button class="fbtn active" onclick="filterBk('all',this)">All</button>
+        <button class="fbtn" onclick="filterBk('pending',this)">Pending</button>
+        <button class="fbtn" onclick="filterBk('confirmed',this)">Confirmed</button>
+        <button class="fbtn" onclick="filterBk('filled',this)">Filled</button>
+        <button class="fbtn" onclick="filterBk('rejected',this)">Rejected</button>
+      </div>
+      <div id="bk-container"></div>
+    </div>
+
+    <!-- MENU EDITOR -->
+    <div class="adm-sec" id="adm-menu-editor">
+      <div style="margin-bottom:1.25rem">
+        <div style="font-family:var(--fd);font-size:1.4rem;color:var(--sage-dark)">Menu Editor</div>
+        <div style="font-size:.82rem;color:var(--muted)">Add, edit or remove dishes. Upload a photo for each item — changes reflect instantly on the public menu.</div>
+      </div>
+      <div class="med-wrap">
+        <div class="med-tabs" id="med-tabs"></div>
+        <div id="med-body"></div>
+      </div>
+    </div>
+
+    <!-- SLOT MANAGER -->
+    <div class="adm-sec" id="adm-slot-manager">
+      <div style="margin-bottom:1.25rem">
+        <div style="font-family:var(--fd);font-size:1.4rem;color:var(--sage-dark)">Slot Manager</div>
+        <div style="font-size:.82rem;color:var(--muted)">Set the number of available seats per time slot and mark slots as filled/open. Changes reflect immediately on the booking page.</div>
+      </div>
+      <div class="slot-mgr" id="slot-mgr-wrap"></div>
+    </div>
+
+    <!-- HOURS EDITOR -->
+    <div class="adm-sec" id="adm-hours-editor">
+      <div style="margin-bottom:1.25rem">
+        <div style="font-family:var(--fd);font-size:1.4rem;color:var(--sage-dark)">Opening Hours</div>
+        <div style="font-size:.82rem;color:var(--muted)">Set open/close times per day. Check "Closed" to mark a day off.</div>
+      </div>
+      <div class="hrs-editor" id="hrs-wrap"></div>
+    </div>
+
+    <!-- GALLERY EDITOR -->
+    <div class="adm-sec" id="adm-gallery-editor">
+      <div style="margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-family:var(--fd);font-size:1.4rem;color:var(--sage-dark)">Gallery Editor</div>
+          <div style="font-size:.82rem;color:var(--muted)">Add, reorder or remove photos. Paste a URL or upload from your device. Changes show on the Gallery page instantly.</div>
+        </div>
+        <button class="submit-btn" style="width:auto;margin-top:0;padding:.6rem 1.4rem" onclick="toggleAddPhoto()">+ Add Photo</button>
+      </div>
+      <div class="add-job-form" id="add-photo-form" style="display:none">
+        <div style="font-weight:500;color:var(--sage-dark);margin-bottom:1rem;font-size:.88rem">New Gallery Photo</div>
+        <div class="form-row">
+          <div class="fg"><label>Caption</label><input type="text" id="ng-cap" placeholder="e.g. Chef's Table"/></div>
+          <div class="fg"><label>Size</label>
+            <select id="ng-cls">
+              <option value="">Normal</option>
+              <option value="tall">Tall (double height)</option>
+              <option value="wide">Wide (double width)</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg"><label>Image URL</label><input type="text" id="ng-url" placeholder="https://images.unsplash.com/…"/></div>
+        <div class="fg"><label>— or upload a file —</label>
+          <input type="file" accept="image/*" id="ng-file" onchange="previewGalleryUpload(this)" style="font-family:var(--fb);font-size:.85rem"/>
+        </div>
+        <div id="ng-preview" style="display:none;margin-bottom:1rem">
+          <img id="ng-preview-img" src="" alt="preview" style="height:120px;object-fit:cover;border:1px solid var(--border);border-radius:2px"/>
+        </div>
+        <div style="display:flex;gap:.75rem">
+          <button class="submit-btn" style="width:auto;padding:.6rem 1.5rem;margin-top:0" onclick="addGalleryPhoto()">Add to Gallery</button>
+          <button class="logout-btn" onclick="toggleAddPhoto()">Cancel</button>
+        </div>
+      </div>
+      <div id="gallery-editor-grid"></div>
+    </div>
+
+    <!-- CONTACT EDITOR -->
+    <div class="adm-sec" id="adm-contact-editor">
+      <div style="margin-bottom:1.25rem">
+        <div style="font-family:var(--fd);font-size:1.4rem;color:var(--sage-dark)">Contact Information</div>
+        <div style="font-size:.82rem;color:var(--muted)">Edit all contact details shown on the public Contact page.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div style="background:var(--white);border:1px solid var(--border);padding:1.5rem">
+          <div style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:1.25rem;font-weight:500">General Contact</div>
+          <div class="fg"><label>Restaurant Name</label><input type="text" id="ct-name" value="Verdana"/></div>
+          <div class="fg"><label>Address Line 1</label><input type="text" id="ct-addr1" value="12, Jubilee Hills Road No. 36"/></div>
+          <div class="fg"><label>Address Line 2</label><input type="text" id="ct-addr2" value="Hyderabad, Telangana 500033"/></div>
+          <div class="fg"><label>Phone</label><input type="text" id="ct-phone" value="+91 40 2345 6789"/></div>
+          <div class="fg"><label>Email</label><input type="email" id="ct-email" value="reservations@verdana.in"/></div>
+          <div class="fg"><label>Website</label><input type="text" id="ct-web" value="www.verdana.in"/></div>
+        </div>
+        <div style="background:var(--white);border:1px solid var(--border);padding:1.5rem">
+          <div style="font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--sage-dark);margin-bottom:1.25rem;font-weight:500">Private Events Contact</div>
+          <div class="fg"><label>Events Manager Name</label><input type="text" id="ct-ev-name" value="Priya Nair"/></div>
+          <div class="fg"><label>Events Email</label><input type="email" id="ct-ev-email" value="events@verdana.in"/></div>
+          <div class="fg"><label>Events Phone (optional)</label><input type="text" id="ct-ev-phone" value=""/></div>
+          <div class="fg"><label>Extra Note</label><textarea id="ct-note" rows="3" style="resize:vertical;width:100%;padding:.7rem;border:1px solid var(--border);background:var(--cream);font-family:var(--fb);font-size:.88rem">For corporate dinners, celebrations, and private dining enquiries:</textarea></div>
+        </div>
+      </div>
+      <div style="margin-top:1rem;text-align:right">
+        <button class="submit-btn" style="width:auto;padding:.7rem 2.5rem;margin-top:0" onclick="saveContact()">Save Contact Info</button>
+      </div>
+    </div>
+
+    <!-- APPLICATIONS -->
+    <div class="adm-sec" id="adm-applications">
+      <div style="margin-bottom:1.25rem;display:flex;justify-content:space-between;align-items:center">
+        <div>
+          <div style="font-family:var(--fd);font-size:1.4rem;color:var(--sage-dark)">Applications & Vacancies</div>
+          <div style="font-size:.82rem;color:var(--muted)">Manage job listings and review applicants.</div>
+        </div>
+        <button class="submit-btn" style="width:auto;margin-top:0;padding:.6rem 1.4rem" onclick="toggleAddJob()">+ Add Vacancy</button>
+      </div>
+      <div class="add-job-form" id="add-job-form" style="display:none">
+        <div style="font-weight:500;color:var(--sage-dark);margin-bottom:1rem;font-size:.88rem">New Vacancy</div>
+        <div class="form-row">
+          <div class="fg"><label>Job Title</label><input type="text" id="nj-title" placeholder="Sous Chef"/></div>
+          <div class="fg"><label>Department</label><select id="nj-dept"><option>Kitchen</option><option>Front of House</option><option>Bar</option><option>Management</option><option>Events</option></select></div>
+        </div>
+        <div class="form-row">
+          <div class="fg"><label>Type</label><select id="nj-type"><option>Full-Time</option><option>Part-Time</option><option>Contract</option><option>Internship</option></select></div>
+          <div class="fg"><label>Location</label><input type="text" id="nj-loc" value="Hyderabad"/></div>
+        </div>
+        <div class="fg"><label>Description</label><textarea id="nj-desc" rows="3" placeholder="Role, responsibilities, requirements…" style="resize:vertical;width:100%;padding:.7rem;border:1px solid var(--border);background:var(--cream);font-family:var(--fb);font-size:.88rem"></textarea></div>
+        <div style="display:flex;gap:.75rem">
+          <button class="submit-btn" style="width:auto;padding:.6rem 1.5rem;margin-top:0" onclick="addJob()">Publish Vacancy</button>
+          <button class="logout-btn" onclick="toggleAddJob()">Cancel</button>
+        </div>
+      </div>
+      <div id="apps-container"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Image preview lightbox (menu) -->
+<div class="lightbox" id="menu-lb" onclick="document.getElementById('menu-lb').classList.remove('open')">
+  <button class="lb-close" onclick="document.getElementById('menu-lb').classList.remove('open')">×</button>
+  <img id="menu-lb-img" src="" alt="" onclick="event.stopPropagation()"/>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://bbbupxlsbqkmuhbsjhra.supabase.co";
+const SUPABASE_KEY = "sb_publishable_qZsrydZiW8J-NHTUZTMK_w_8WkfThfw";
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+// ══════════════ STATE ══════════════
+let bookings=[], applications=[];
+let bkFilter='all', selectedSlot=null, applyJobIdx=null, activeMedCat='', admLoggedIn=false;
+const guestCounts={adults:2,children:0,infants:0};
+
+// Slot data: {time, capacity, filled}
+const slotData=[
+  {time:'12:00 PM',capacity:0,filled:true},
+  {time:'12:30 PM',capacity:6,filled:false},
+  {time:'1:00 PM',capacity:0,filled:true},
+  {time:'1:30 PM',capacity:8,filled:false},
+  {time:'2:00 PM',capacity:8,filled:false},
+  {time:'2:30 PM',capacity:0,filled:true},
+  {time:'7:00 PM',capacity:10,filled:false},
+  {time:'7:30 PM',capacity:10,filled:false},
+  {time:'8:00 PM',capacity:0,filled:true},
+  {time:'8:30 PM',capacity:8,filled:false},
+  {time:'9:00 PM',capacity:6,filled:false},
+  {time:'9:30 PM',capacity:6,filled:false},
+];
+
+const menuData={
+  starters:{label:'Starters',items:[
+    {name:'Burrata & Heirloom Tomato',desc:'Creamy burrata, vine-ripened tomatoes, aged balsamic, fresh basil oil',price:890,tags:['Vegetarian','Gluten Free'],img:'https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?w=300&q=80'},
+    {name:'Seared Scallops',desc:'Hand-dived scallops, cauliflower purée, pancetta crisp, herb oil',price:1490,tags:['Gluten Free',"Chef's Signature"],img:'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=300&q=80'},
+    {name:'Truffle Arancini',desc:'Crisp risotto balls with black truffle, parmesan foam, micro herbs',price:750,tags:['Vegetarian'],img:'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=300&q=80'},
+    {name:'Foie Gras Torchon',desc:'Sauternes-poached foie gras, brioche toast, fig compote',price:1950,tags:["Chef's Signature"],img:''},
+  ]},
+  mains:{label:'Mains',items:[
+    {name:'Pan-Roasted Duck Breast',desc:'Sous-vide duck, cherry jus, dauphinoise potato, wilted spinach',price:2490,tags:['Gluten Free',"Chef's Signature"],img:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=300&q=80'},
+    {name:'Black Truffle Risotto',desc:'Carnaroli rice, aged parmesan, fresh black truffle, chive oil',price:1990,tags:['Vegetarian','Gluten Free'],img:'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=300&q=80'},
+    {name:'Wagyu Beef Tenderloin',desc:'A5 Wagyu, bone marrow butter, roasted shallots, seasonal vegetables',price:4200,tags:["Chef's Signature"],img:'https://images.unsplash.com/photo-1558030006-450675393462?w=300&q=80'},
+    {name:'Halibut en Papillote',desc:'Atlantic halibut, lemon butter, capers, asparagus, cherry tomatoes',price:2100,tags:['Gluten Free'],img:'https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=300&q=80'},
+  ]},
+  desserts:{label:'Desserts',items:[
+    {name:'Valrhona Chocolate Fondant',desc:'Warm dark chocolate heart, vanilla bean ice cream, gold leaf',price:690,tags:['Vegetarian',"Chef's Signature"],img:'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=300&q=80'},
+    {name:'Tarte Tatin',desc:'Caramelised apple tart, crème fraîche, calvados anglaise',price:590,tags:['Vegetarian'],img:'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=300&q=80'},
+    {name:'Cheese Board Selection',desc:'Five artisan cheeses, quince paste, candied walnuts, sourdough crackers',price:990,tags:['Vegetarian'],img:'https://images.unsplash.com/photo-1452195100486-9cc805987862?w=300&q=80'},
+  ]},
+  drinks:{label:'Drinks',items:[
+    {name:'Verdana Signature Martini',desc:'Hendricks gin, cucumber, elderflower tonic, fresh dill',price:890,tags:['Vegetarian'],img:'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=300&q=80'},
+    {name:'Pouilly-Fumé, Didier Dagueneau',desc:'Loire Valley, France. Crisp, mineral-driven Sauvignon Blanc',price:3200,tags:[],img:'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=300&q=80'},
+    {name:'Garden Mocktail',desc:'Fresh cucumber, mint, green apple, lime, sparkling water',price:490,tags:['Vegetarian','Gluten Free'],img:'https://images.unsplash.com/photo-1508473641456-bb2e2e32e9b8?w=300&q=80'},
+    {name:'Selection of Teas',desc:'Darjeeling first flush, Jasmine pearl, Earl Grey, Chamomile',price:350,tags:['Vegetarian','Gluten Free'],img:'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=300&q=80'},
+  ]},
+};
+
+const hoursData=[
+  {day:'Monday',closed:true,open:'12:00',close:'23:00'},
+  {day:'Tuesday',closed:false,open:'12:00',close:'23:00'},
+  {day:'Wednesday',closed:false,open:'12:00',close:'23:00'},
+  {day:'Thursday',closed:false,open:'12:00',close:'23:00'},
+  {day:'Friday',closed:false,open:'12:00',close:'23:30'},
+  {day:'Saturday',closed:false,open:'12:00',close:'23:30'},
+  {day:'Sunday',closed:false,open:'12:00',close:'22:30'},
+];
+
+const jobsData=[
+  {title:'Sous Chef',dept:'Kitchen',type:'Full-Time',loc:'Hyderabad',desc:'Work alongside our head chef crafting seasonal menus. Minimum 3 years fine dining experience required.'},
+  {title:'Sommelier',dept:'Front of House',type:'Full-Time',loc:'Hyderabad',desc:'Manage our cellar of 200+ wines, train staff, and guide guests with expertise and warmth.'},
+  {title:'Senior Waiter / Waitress',dept:'Front of House',type:'Full-Time',loc:'Hyderabad',desc:'Deliver exceptional guest experiences. Luxury hospitality experience preferred.'},
+  {title:'Events Coordinator',dept:'Events',type:'Full-Time',loc:'Hyderabad',desc:'Plan and execute private dining events and special celebrations.'},
+  {title:'Pastry Chef',dept:'Kitchen',type:'Part-Time',loc:'Hyderabad',desc:'Create beautiful seasonal desserts and petit fours. Formal pastry training required.'},
+];
+
+// Gallery images
+const galleryImgs=[
+  {src:'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80',cap:'Main Dining Room',cls:'tall'},
+  {src:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80',cap:'Seasonal Plates',cls:''},
+  {src:'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800&q=80',cap:'The Entrance',cls:''},
+  {src:'https://images.unsplash.com/photo-1485963631004-f2f00b1d6606?w=900&q=80',cap:'Artisan Cheese Board',cls:'wide'},
+  {src:'https://images.unsplash.com/photo-1510628314141-9044f8a4a57c?w=800&q=80',cap:'The Bar',cls:''},
+  {src:'https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=800&q=80',cap:'Wine Cellar',cls:''},
+  {src:'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=900&q=80',cap:'Private Dining',cls:'wide'},
+  {src:'https://images.unsplash.com/photo-1482275548304-a58859dc31b7?w=800&q=80',cap:'Coffee Service',cls:''},
+
+];
+
+function replaceArray(target, items){
+  target.length = 0;
+  target.push(...items);
+}
+
+function replaceObject(target, source){
+  Object.keys(target).forEach(k => delete target[k]);
+  Object.assign(target, source);
+}
+
+function serializeMenuData(){
+  const rows = [];
+  Object.entries(menuData).forEach(([category_key, cat]) => {
+    cat.items.forEach((it, idx) => {
+      rows.push({
+        category_key,
+        category_label: cat.label,
+        name: it.name,
+        description: it.desc,
+        price: it.price,
+        tag: it.tags && it.tags.length ? it.tags[0] : null,
+        img: it.img || '',
+        sort_order: idx
+      });
+    });
+  });
+  return rows;
+}
+
+function buildMenuDataFromRows(rows){
+  const grouped = {};
+  rows.forEach(row => {
+    if(!grouped[row.category_key]){
+      grouped[row.category_key] = {label: row.category_label, items: []};
+    }
+    grouped[row.category_key].items.push({
+      id: row.id,
+      name: row.name,
+      desc: row.description,
+      price: row.price,
+      tags: row.tag ? [row.tag] : [],
+      img: row.img || ''
+    });
+  });
+  return grouped;
+}
+
+async function seedMenuIfEmpty(){
+  const { count, error } = await supabaseClient.from('menu_items').select('*', { count: 'exact', head: true });
+  if(error) throw error;
+  if(count === 0){
+    const { error: insertError } = await supabaseClient.from('menu_items').insert(serializeMenuData());
+    if(insertError) throw insertError;
+  }
+}
+
+async function seedSlotsIfEmpty(){
+  const { count, error } = await supabaseClient.from('slots').select('*', { count: 'exact', head: true });
+  if(error) throw error;
+  if(count === 0){
+    const rows = slotData.map((s, idx) => ({
+      slot_time: s.time,
+      capacity: s.capacity,
+      filled: s.filled,
+      sort_order: idx
+    }));
+    const { error: insertError } = await supabaseClient.from('slots').insert(rows);
+    if(insertError) throw insertError;
+  }
+}
+
+async function seedHoursIfEmpty(){
+  const { count, error } = await supabaseClient.from('opening_hours').select('*', { count: 'exact', head: true });
+  if(error) throw error;
+  if(count === 0){
+    const rows = hoursData.map((h, idx) => ({
+      day: h.day,
+      closed: h.closed,
+      open_time: h.open,
+      close_time: h.close,
+      sort_order: idx
+    }));
+    const { error: insertError } = await supabaseClient.from('opening_hours').insert(rows);
+    if(insertError) throw insertError;
+  }
+}
+
+async function seedGalleryIfEmpty(){
+  const { count, error } = await supabaseClient.from('gallery_images').select('*', { count: 'exact', head: true });
+  if(error) throw error;
+  if(count === 0){
+    const rows = galleryImgs.map((g, idx) => ({
+      src: g.src,
+      cap: g.cap,
+      cls: g.cls || '',
+      sort_order: idx
+    }));
+    const { error: insertError } = await supabaseClient.from('gallery_images').insert(rows);
+    if(insertError) throw insertError;
+  }
+}
+
+async function seedContactIfEmpty(){
+  const { data, error } = await supabaseClient.from('contact_info').select('id').eq('id', 1).maybeSingle();
+  if(error) throw error;
+  if(!data){
+    const payload = {
+      id: 1,
+      name: contactData.name,
+      addr1: contactData.addr1,
+      addr2: contactData.addr2,
+      phone: contactData.phone,
+      email: contactData.email,
+      web: contactData.web,
+      ev_name: contactData.evName,
+      ev_email: contactData.evEmail,
+      ev_phone: contactData.evPhone,
+      note: contactData.note
+    };
+    const { error: insertError } = await supabaseClient.from('contact_info').insert(payload);
+    if(insertError) throw insertError;
+  }
+}
+
+async function seedJobsIfEmpty(){
+  const { count, error } = await supabaseClient.from('jobs').select('*', { count: 'exact', head: true });
+  if(error) throw error;
+  if(count === 0){
+    const rows = jobsData.map((j, idx) => ({
+      title: j.title,
+      dept: j.dept,
+      type: j.type,
+      loc: j.loc,
+      description: j.desc,
+      sort_order: idx
+    }));
+    const { error: insertError } = await supabaseClient.from('jobs').insert(rows);
+    if(insertError) throw insertError;
+  }
+}
+
+async function ensureSeedData(){
+  await seedMenuIfEmpty();
+  await seedSlotsIfEmpty();
+  await seedHoursIfEmpty();
+  await seedGalleryIfEmpty();
+  await seedContactIfEmpty();
+  await seedJobsIfEmpty();
+}
+
+async function loadMenuFromSupabase(){
+  const { data, error } = await supabaseClient.from('menu_items').select('*').order('category_key').order('sort_order');
+  if(error) throw error;
+  replaceObject(menuData, buildMenuDataFromRows(data || []));
+  if(!pubMenuTab || !menuData[pubMenuTab]) pubMenuTab = Object.keys(menuData)[0] || '';
+  if(!activeMedCat || !menuData[activeMedCat]) activeMedCat = Object.keys(menuData)[0] || '';
+}
+
+async function loadSlotsFromSupabase(){
+  const { data, error } = await supabaseClient.from('slots').select('*').order('sort_order');
+  if(error) throw error;
+  replaceArray(slotData, (data || []).map(s => ({
+    id: s.id,
+    time: s.slot_time,
+    capacity: s.capacity,
+    filled: s.filled
+  })));
+}
+
+async function loadHoursFromSupabase(){
+  const { data, error } = await supabaseClient.from('opening_hours').select('*').order('sort_order');
+  if(error) throw error;
+  replaceArray(hoursData, (data || []).map(h => ({
+    id: h.id,
+    day: h.day,
+    closed: h.closed,
+    open: h.open_time,
+    close: h.close_time
+  })));
+}
+
+async function loadGalleryFromSupabase(){
+  const { data, error } = await supabaseClient.from('gallery_images').select('*').order('sort_order');
+  if(error) throw error;
+  replaceArray(galleryImgs, (data || []).map(g => ({
+    id: g.id,
+    src: g.src,
+    cap: g.cap,
+    cls: g.cls || ''
+  })));
+}
+
+async function loadContactFromSupabase(){
+  const { data, error } = await supabaseClient.from('contact_info').select('*').eq('id', 1).maybeSingle();
+  if(error) throw error;
+  if(data){
+    contactData.name = data.name;
+    contactData.addr1 = data.addr1;
+    contactData.addr2 = data.addr2;
+    contactData.phone = data.phone;
+    contactData.email = data.email;
+    contactData.web = data.web || '';
+    contactData.evName = data.ev_name || '';
+    contactData.evEmail = data.ev_email || '';
+    contactData.evPhone = data.ev_phone || '';
+    contactData.note = data.note || '';
+  }
+}
+
+async function loadJobsFromSupabase(){
+  const { data, error } = await supabaseClient.from('jobs').select('*').order('sort_order');
+  if(error) throw error;
+  replaceArray(jobsData, (data || []).map(j => ({
+    id: j.id,
+    title: j.title,
+    dept: j.dept,
+    type: j.type,
+    loc: j.loc,
+    desc: j.description
+  })));
+}
+
+async function loadApplicationsFromSupabase(){
+  const { data, error } = await supabaseClient.from('applications').select('*').order('created_at', { ascending: false });
+  if(error) throw error;
+  replaceArray(applications, (data || []).map(a => ({
+    id: a.id,
+    fname: a.fname,
+    lname: a.lname,
+    email: a.email,
+    phone: a.phone,
+    exp: a.exp,
+    note: a.note,
+    jobTitle: a.job_title,
+    jobDept: a.job_dept,
+    submitted: a.created_at,
+    status: a.status
+  })));
+}
+
+async function loadAllPublicData(){
+  await ensureSeedData();
+  await Promise.all([
+    loadMenuFromSupabase(),
+    loadSlotsFromSupabase(),
+    loadHoursFromSupabase(),
+    loadGalleryFromSupabase(),
+    loadContactFromSupabase(),
+    loadJobsFromSupabase()
+  ]);
+}
+
+async function syncMenuToSupabase(){
+  const rows = serializeMenuData();
+  let { error } = await supabaseClient.from('menu_items').delete().gte('id', 0);
+  if(error) throw error;
+  if(rows.length){
+    ({ error } = await supabaseClient.from('menu_items').insert(rows));
+    if(error) throw error;
+  }
+  await loadMenuFromSupabase();
+  renderPubMenu();
+}
+
+async function syncSlotsToSupabase(){
+  const rows = slotData.map((s, idx) => ({
+    slot_time: s.time,
+    capacity: s.capacity,
+    filled: s.filled,
+    sort_order: idx
+  }));
+  let { error } = await supabaseClient.from('slots').delete().gte('id', 0);
+  if(error) throw error;
+  if(rows.length){
+    ({ error } = await supabaseClient.from('slots').insert(rows));
+    if(error) throw error;
+  }
+  await loadSlotsFromSupabase();
+  renderSlotGrid();
+}
+
+async function syncHoursToSupabase(){
+  const rows = hoursData.map((h, idx) => ({
+    day: h.day,
+    closed: h.closed,
+    open_time: h.open,
+    close_time: h.close,
+    sort_order: idx
+  }));
+  let { error } = await supabaseClient.from('opening_hours').delete().gte('id', 0);
+  if(error) throw error;
+  if(rows.length){
+    ({ error } = await supabaseClient.from('opening_hours').insert(rows));
+    if(error) throw error;
+  }
+  await loadHoursFromSupabase();
+  renderPubHours();
+}
+
+async function syncGalleryToSupabase(){
+  const rows = galleryImgs.map((g, idx) => ({
+    src: g.src,
+    cap: g.cap,
+    cls: g.cls || '',
+    sort_order: idx
+  }));
+  let { error } = await supabaseClient.from('gallery_images').delete().gte('id', 0);
+  if(error) throw error;
+  if(rows.length){
+    ({ error } = await supabaseClient.from('gallery_images').insert(rows));
+    if(error) throw error;
+  }
+  await loadGalleryFromSupabase();
+  renderGallery();
+}
+
+async function syncJobsToSupabase(){
+  const rows = jobsData.map((j, idx) => ({
+    title: j.title,
+    dept: j.dept,
+    type: j.type,
+    loc: j.loc,
+    description: j.desc,
+    sort_order: idx
+  }));
+  let { error } = await supabaseClient.from('jobs').delete().gte('id', 0);
+  if(error) throw error;
+  if(rows.length){
+    ({ error } = await supabaseClient.from('jobs').insert(rows));
+    if(error) throw error;
+  }
+  await loadJobsFromSupabase();
+  renderJobs();
+}
+
+async function saveContactToSupabase(){
+  const payload = {
+    id: 1,
+    name: contactData.name,
+    addr1: contactData.addr1,
+    addr2: contactData.addr2,
+    phone: contactData.phone,
+    email: contactData.email,
+    web: contactData.web,
+    ev_name: contactData.evName,
+    ev_email: contactData.evEmail,
+    ev_phone: contactData.evPhone,
+    note: contactData.note
+  };
+  const { error } = await supabaseClient.from('contact_info').upsert(payload);
+  if(error) throw error;
+  await loadContactFromSupabase();
+  renderPublicContact();
+}
+
+async function initApp(){
+  try{
+    await loadAllPublicData();
+    renderPubHours();
+    renderPubMenu();
+    renderGallery();
+    renderSlotGrid();
+    renderJobs();
+    renderPublicContact();
+  }catch(err){
+    console.error('Init failed:', err);
+    toast('Failed to load saved data');
+    renderPubHours();
+    renderPubMenu();
+    renderGallery();
+    renderSlotGrid();
+    renderJobs();
+  }
+}
+
+// ══════════════ NAVIGATION ══════════════
+
+function go(id){
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+
+  if (id === 'menu') renderPubMenu();
+  if (id === 'gallery') renderGallery();
+  if (id === 'contact') renderPubHours();
+  if (id === 'careers') renderJobs();
+
+  if (id === 'admin') {
+    loadBookingsFromSupabase().then(() => {
+      renderAdmin();
+    });
+  }
+}
+
+// ══════════════ GALLERY ══════════════
+function renderGallery(){
+  document.getElementById('gallery-grid').innerHTML=galleryImgs.map(g=>`
+    <div class="g-item ${g.cls}" onclick="openLB('${g.src}')">
+      <img src="${g.src}" alt="${g.cap}" loading="lazy"/>
+      <div class="g-overlay"><div class="g-cap">${g.cap}</div></div>
+    </div>`).join('');
+}
+function openLB(src){document.getElementById('lb-img').src=src;document.getElementById('lightbox').classList.add('open');}
+function closeLB(){document.getElementById('lightbox').classList.remove('open');}
+
+// ══════════════ BOOKING ══════════════
+(function(){
+  const d=new Date();d.setDate(d.getDate()+1);
+  const s=d.toISOString().split('T')[0];
+  document.getElementById('bk-date').min=s;
+  document.getElementById('bk-date').value=s;
+})();
+
+function chg(t,d){
+  guestCounts[t]=Math.max(0,guestCounts[t]+d);
+  if(t==='adults') guestCounts.adults=Math.max(1,guestCounts.adults);
+  document.getElementById('cnt-'+t).textContent=guestCounts[t];
+  document.getElementById('child-note').style.display=guestCounts.children>0?'block':'none';
+}
+
+function renderSlotGrid(){
+  document.getElementById('slot-grid').innerHTML=slotData.map((s,i)=>{
+    const isFilled=s.filled||s.capacity===0;
+    const cls=isFilled?'slot-filled':selectedSlot===s.time?'slot-selected':'';
+    const availTxt=isFilled?'Filled':(s.capacity===1?'1 seat left':s.capacity+' seats');
+    const clickAttr=isFilled?'':'onclick="selectSlot('+i+')"';
+    return '<div class="slot-card '+cls+'" '+clickAttr+' data-idx="'+i+'">'
+      +'<span class="slot-time">'+s.time+'</span>'
+      +'<span class="slot-avail">'+availTxt+'</span>'
+      +'</div>';
+  }).join('');
+}
+
+function selectSlot(idx){
+  selectedSlot=slotData[idx].time;
+  renderSlotGrid();
+}
+
+async function submitBooking(){
+  const date=document.getElementById('bk-date').value;
+  const fname=document.getElementById('bk-fname').value.trim();
+  const lname=document.getElementById('bk-lname').value.trim();
+  const email=document.getElementById('bk-email').value.trim();
+  const phone=document.getElementById('bk-phone').value.trim();
+  const notes=document.getElementById('bk-notes').value.trim();
+  const occasion=document.getElementById('bk-occasion').value;
+  const err=document.getElementById('bk-error');
+  if(!date){err.textContent='Please select a date.';err.style.display='block';return;}
+  if(!selectedSlot){err.textContent='Please select a time slot.';err.style.display='block';return;}
+  if(!fname||!lname){err.textContent='Please enter your full name.';err.style.display='block';return;}
+  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';err.style.display='block';return;}
+  if(!phone){err.textContent='Please enter your phone number.';err.style.display='block';return;}
+  err.style.display='none';
+  const gs=`${guestCounts.adults} adult${guestCounts.adults!==1?'s':''}${guestCounts.children>0?`, ${guestCounts.children} child${guestCounts.children!==1?'ren':''}` :''}${guestCounts.infants>0?`, ${guestCounts.infants} infant${guestCounts.infants!==1?'s':''}` :''}`;
+  const ref='VRD-'+Date.now();
+  const { error } = await supabaseClient.from('bookings').insert([{
+    ref,
+    booking_date:date,
+    booking_time:selectedSlot,
+    adults:guestCounts.adults,
+    children:guestCounts.children,
+    infants:guestCounts.infants,
+    guest_str:gs,
+    occasion,
+    fname,
+    lname,
+    email,
+    phone,
+    notes,
+    status:'pending'
+  }]);
+  if(error){err.textContent='Booking save failed: '+error.message;err.style.display='block';return;}
+  document.getElementById('cn-name').textContent=fname+' '+lname;
+  document.getElementById('cn-details').textContent=gs+' on '+new Date(date).toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' at '+selectedSlot;
+  document.getElementById('cn-email').textContent=email;
+  document.getElementById('cn-ref').textContent=ref;
+  document.getElementById('bk-form-wrap').style.display='none';
+  document.getElementById('confirm-box').classList.add('show');
+  selectedSlot=null; 
+}
+
+// ══════════════ PUBLIC MENU ══════════════
+const tagCls={'Vegetarian':'tag-veg','Gluten Free':'tag-gf',"Chef's Signature":'tag-sig'};
+let pubMenuTab=Object.keys(menuData)[0];
+
+function renderPubMenu(){
+  const keys=Object.keys(menuData);
+  document.getElementById('pub-menu-tabs').innerHTML=keys.map(k=>`<button class="menu-tab${k===pubMenuTab?' active':''}" onclick="switchPub('${k}')">${menuData[k].label}</button>`).join('');
+  document.getElementById('pub-menu-body').innerHTML=keys.map(k=>`
+    <div id="ptab-${k}" class="menu-cat${k===pubMenuTab?' active':''}">
+      <div class="menu-cat-title">${menuData[k].label}</div>
+      <div class="menu-items">${menuData[k].items.map((it,i)=>{
+        const imgEl=it.img
+          ?`<img class="menu-item-img" src="${it.img}" alt="${it.name}" onclick="openMenuLB('${it.img}')" title="Click to enlarge"/>`
+          :`<div class="menu-item-img-placeholder">No photo</div>`;
+        return `<div class="menu-item">
+          ${imgEl}
+          <div class="menu-item-info">
+            <h4>${it.name}</h4><p>${it.desc}</p>
+            <div class="menu-item-tags">${it.tags.map(t=>`<span class="tag ${tagCls[t]||''}">${t}</span>`).join('')}</div>
+          </div>
+          <div class="menu-price">₹${it.price.toLocaleString('en-IN')}</div>
+        </div>`;
+      }).join('')}</div>
+    </div>`).join('');
+}
+function switchPub(k){pubMenuTab=k;renderPubMenu();}
+function openMenuLB(src){document.getElementById('menu-lb-img').src=src;document.getElementById('menu-lb').classList.add('open');}
+
+// ══════════════ PUBLIC HOURS ══════════════
+function fmt(t){if(!t)return '';const[h,m]=t.split(':').map(Number);const ap=h<12?'AM':'PM';return `${h%12||12}:${m.toString().padStart(2,'0')} ${ap}`;}
+function renderPubHours(){
+  document.getElementById('pub-hours').innerHTML=hoursData.map(h=>`<div class="hrs-row"><span>${h.day}</span><span>${h.closed?'Closed':fmt(h.open)+' – '+fmt(h.close)}</span></div>`).join('');
+}
+
+// ══════════════ CAREERS ══════════════
+function renderJobs(){
+  const el=document.getElementById('jobs-list');
+  if(jobsData.length===0){el.innerHTML='<div class="no-jobs">No vacancies at this time. Please check back soon!</div>';return;}
+  el.innerHTML=jobsData.map((j,i)=>`
+    <div class="job-card">
+      <div class="job-top">
+        <div><div class="job-title">${j.title}</div>
+          <div class="job-meta"><span class="jtag jt-dept">${j.dept}</span><span class="jtag jt-type">${j.type}</span><span class="jtag jt-loc">📍 ${j.loc}</span></div>
+        </div>
+        <button class="job-apply" onclick="openApply(${i})">Apply Now</button>
+      </div>
+      <div class="job-desc">${j.desc}</div>
+    </div>`).join('');
+}
+function openApply(i){
+  applyJobIdx=i;const j=jobsData[i];
+  document.getElementById('apply-title').textContent=j.title;
+  document.getElementById('apply-sub').textContent=`${j.dept} · ${j.loc} · ${j.type}`;
+  document.getElementById('apply-form').style.display='block';
+  document.getElementById('apply-success').classList.remove('show');
+  document.getElementById('ap-error').style.display='none';
+  ['ap-fname','ap-lname','ap-email','ap-phone','ap-exp','ap-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('apply-modal-bg').classList.add('open');
+}
+function closeApply(e){if(!e||e.target===document.getElementById('apply-modal-bg'))document.getElementById('apply-modal-bg').classList.remove('open');}
+async function submitApp(){
+  const fname=document.getElementById('ap-fname').value.trim();
+  const lname=document.getElementById('ap-lname').value.trim();
+  const email=document.getElementById('ap-email').value.trim();
+  const phone=document.getElementById('ap-phone').value.trim();
+  const exp=document.getElementById('ap-exp').value.trim();
+  const note=document.getElementById('ap-note').value.trim();
+  const err=document.getElementById('ap-error');
+  if(!fname||!lname){err.textContent='Please enter your full name.';err.style.display='block';return;}
+  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';err.style.display='block';return;}
+  if(!phone){err.textContent='Please enter your phone number.';err.style.display='block';return;}
+  err.style.display='none';
+  const { error } = await supabaseClient.from('applications').insert([{
+    fname,lname,email,phone,exp,note,
+    job_title: jobsData[applyJobIdx].title,
+    job_dept: jobsData[applyJobIdx].dept,
+    status:'new'
+  }]);
+  if(error){err.textContent=error.message;err.style.display='block';return;}
+  await loadApplicationsFromSupabase();
+  document.getElementById('apply-form').style.display='none';
+  document.getElementById('apply-success').classList.add('show');
+}
+
+async function loadBookingsFromSupabase(){
+  const { data, error } = await supabaseClient
+    .from('bookings')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if(error){
+    console.error('Failed to load bookings:', error);
+    toast('Failed to load bookings');
+    return;
+  }
+
+  bookings = data.map(b => ({
+    id: b.id,
+    ref: b.ref,
+    date: b.booking_date,
+    time: b.booking_time,
+    adults: b.adults,
+    children: b.children,
+    infants: b.infants,
+    guestStr: b.guest_str,
+    occasion: b.occasion,
+    fname: b.fname,
+    lname: b.lname,
+    email: b.email,
+    phone: b.phone,
+    notes: b.notes,
+    status: b.status,
+    created: b.created_at
+  }));
+}
+
+// ══════════════ ADMIN ══════════════
+async function adminLogin(){
+  const user=document.getElementById('adm-user').value.trim();
+  const pass=document.getElementById('adm-pass').value.trim();
+  if(user==='admin'&&pass==='verdana2024'){
+    admLoggedIn=true;
+    document.getElementById('adm-err').style.display='none';
+    document.getElementById('adm-login').style.display='none';
+    document.getElementById('adm-dash').style.display='block';
+    await Promise.all([loadBookingsFromSupabase(), loadApplicationsFromSupabase(), loadJobsFromSupabase()]);
+    renderAdmin();
+  } else {document.getElementById('adm-err').style.display='block';}
+}
+function adminLogout(){
+  admLoggedIn=false;
+  document.getElementById('adm-login').style.display='flex';
+  document.getElementById('adm-dash').style.display='none';
+  document.getElementById('adm-user').value='';
+  document.getElementById('adm-pass').value='';
+}
+function admTab(name,btn){
+  document.querySelectorAll('.adm-tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.adm-sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('adm-'+name).classList.add('active');
+  if(name==='menu-editor') renderMenuEditor();
+  if(name==='slot-manager') renderSlotManager();
+  if(name==='hours-editor') renderHrsEditor();
+  if(name==='gallery-editor') renderGalleryEditor();
+  if(name==='contact-editor') renderContactEditor();
+  if(name==='applications') renderAppsAdmin();
+}
+function renderAdmin(){
+  if(!admLoggedIn) return;
+  const p=bookings.filter(b=>b.status==='pending').length;
+  const c=bookings.filter(b=>b.status==='confirmed').length;
+  const f=bookings.filter(b=>b.status==='filled').length;
+  const r=bookings.filter(b=>b.status==='rejected').length;
+  document.getElementById('adm-stats').innerHTML=`
+    <div class="adm-stat"><div class="adm-stat-num">${bookings.length}</div><div class="adm-stat-lbl">Total</div></div>
+    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--gold)">${p}</div><div class="adm-stat-lbl">Pending</div></div>
+    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--sage-dark)">${c}</div><div class="adm-stat-lbl">Confirmed</div></div>
+    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--muted)">${f+r}</div><div class="adm-stat-lbl">Closed/Rejected</div></div>`;
+  renderBkTable();
+}
+function filterBk(f,btn){bkFilter=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderBkTable();}
+function renderBkTable(){
+  const el=document.getElementById('bk-container');
+  const list=bkFilter==='all'?bookings:bookings.filter(b=>b.status===bkFilter);
+  if(list.length===0){el.innerHTML=`<div class="empty-st">No ${bkFilter==='all'?'':bkFilter+' '}reservations found.</div>`;return;}
+  el.innerHTML=`<table class="dt"><thead><tr><th>Ref</th><th>Guest</th><th>Date & Time</th><th>Guests</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+  ${list.map(b=>{
+    const i=bookings.indexOf(b);
+    const kidBadge=(b.children>0||b.infants>0)?` <span style="background:#eef4ee;color:#3d5c41;font-size:.6rem;padding:1px 6px;border-radius:2px">Kids</span>`:'';
+    let acts='';
+    if(b.status==='pending'){
+      acts=`<button class="ab ag" onclick="updBk(${i},'confirmed')">Confirm</button><button class="ab aa" onclick="updBk(${i},'filled')">Mark Filled</button><button class="ab ar" onclick="updBk(${i},'rejected')">Reject</button>`;
+    } else if(b.status==='confirmed'){
+      acts=`<button class="ab aa" onclick="updBk(${i},'filled')">Mark Filled</button><button class="ab ar" onclick="updBk(${i},'rejected')">Reject</button>`;
+    } else if(b.status==='filled'){
+      acts=`<button class="ab ar" onclick="clearBk(${i})" title="Clear data (visit complete)">Clear Data</button>`;
+    } else {
+      acts=`<button class="ab ar" onclick="clearBk(${i})">Delete</button>`;
+    }
+    return `<tr>
+      <td style="font-family:var(--fd);color:var(--sage-dark)">${b.ref}</td>
+      <td><strong>${b.fname} ${b.lname}</strong>${b.occasion?`<br><span style="font-size:.73rem;color:var(--muted)">${b.occasion}</span>`:''}${b.notes?`<br><span style="font-size:.73rem;color:var(--muted)">${b.notes.slice(0,35)}${b.notes.length>35?'…':''}</span>`:''}</td>
+      <td>${b.date}<br><span style="color:var(--sage-dark)">${b.time}</span></td>
+      <td>${b.guestStr}${kidBadge}</td>
+      <td>${b.email}<br><span style="color:var(--muted);font-size:.79rem">${b.phone}</span></td>
+      <td><span class="badge b${b.status[0]}">${b.status}</span></td>
+      <td>${acts}</td></tr>`;
+  }).join('')}
+  </tbody></table>`;
+}
+async function updBk(i,status){
+  const b = bookings[i];
+  const { error } = await supabaseClient.from('bookings').update({ status }).eq('id', b.id);
+  if(error){toast('Update failed'); console.error(error); return;}
+  bookings[i].status=status;renderAdmin();toast('Reservation updated');
+}
+async function clearBk(i){
+  if(!confirm('Permanently delete this guest\'s personal data? This cannot be undone.')) return;
+  const b=bookings[i];
+  const updates = { fname:'[Deleted]', lname:'', email:'[Deleted]', phone:'[Deleted]', notes:'', status:'filled' };
+  const { error } = await supabaseClient.from('bookings').update(updates).eq('id', b.id);
+  if(error){toast('Clear failed'); console.error(error); return;}
+  Object.assign(b, updates);
+  renderAdmin();toast('Guest data cleared');
+}
+
+// ── MENU EDITOR ──
+if(!activeMedCat) activeMedCat=Object.keys(menuData)[0];
+function renderMenuEditor(){
+  const keys=Object.keys(menuData);
+  document.getElementById('med-tabs').innerHTML=keys.map(k=>`<button class="med-tab${k===activeMedCat?' active':''}" onclick="switchMed('${k}')">${menuData[k].label}</button>`).join('');
+  document.getElementById('med-body').innerHTML=keys.map(k=>`
+    <div id="medb-${k}" style="display:${k===activeMedCat?'block':'none'}">
+      <div class="med-hdr"><span>Photo</span><span>Name</span><span>Description</span><span>Price ₹</span><span>Tag</span><span>Photo URL</span><span></span></div>
+      ${menuData[k].items.map((it,i)=>`
+        <div class="med-row" id="mrow-${k}-${i}">
+          <div>
+            ${it.img?`<img class="med-thumb" src="${it.img}" alt="" onclick="openMenuLB('${it.img}')"/>`:`<div class="med-thumb-ph" onclick="document.getElementById('img-file-${k}-${i}').click()">+ Photo</div>`}
+            <input type="file" accept="image/*" id="img-file-${k}-${i}" class="img-input" onchange="handleImgUpload('${k}',${i},this)"/>
+          </div>
+          <input type="text" id="mn-${k}-${i}" value="${it.name}"/>
+          <input type="text" id="md-${k}-${i}" value="${it.desc}"/>
+          <input type="number" id="mp-${k}-${i}" value="${it.price}"/>
+          <select id="mt-${k}-${i}" style="padding:.35rem .4rem;border:1px solid var(--border);font-family:var(--fb);font-size:.78rem;background:var(--cream);width:100%">
+            <option value="">None</option>
+            <option${it.tags.includes('Vegetarian')?' selected':''}>Vegetarian</option>
+            <option${it.tags.includes('Gluten Free')?' selected':''}>Gluten Free</option>
+            <option${it.tags.includes("Chef's Signature")?' selected':''}>Chef's Signature</option>
+          </select>
+          <input type="text" id="mi-${k}-${i}" value="${it.img}" placeholder="https://…" style="font-size:.75rem"/>
+          <div style="display:flex;gap:.35rem;flex-direction:column">
+            <button class="msave" onclick="saveMed('${k}',${i})">Save</button>
+            <button class="mdel" onclick="delMed('${k}',${i})">✕</button>
+          </div>
+        </div>`).join('')}
+      <div class="add-row">
+        <div><label>Photo URL</label><input type="text" id="new-mi-${k}" placeholder="https://…"/></div>
+        <div><label>Name</label><input type="text" id="new-mn-${k}" placeholder="Dish name"/></div>
+        <div><label>Description</label><input type="text" id="new-md-${k}" placeholder="Description"/></div>
+        <div><label>Price ₹</label><input type="number" id="new-mp-${k}" placeholder="0"/></div>
+        <div><label>Tag</label><select id="new-mt-${k}"><option value="">None</option><option>Vegetarian</option><option>Gluten Free</option><option>Chef's Signature</option></select></div>
+        <div></div>
+        <button onclick="addMed('${k}')">+ Add</button>
+      </div>
+    </div>`).join('');
+}
+function switchMed(k){activeMedCat=k;renderMenuEditor();}
+function handleImgUpload(cat,i,input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    menuData[cat].items[i].img=e.target.result;
+    document.getElementById(`mi-${cat}-${i}`).value='[uploaded]';
+    renderMenuEditor(); toast('Photo uploaded');
+  };
+  reader.readAsDataURL(file);
+}
+async function saveMed(cat,i){
+  const it=menuData[cat].items[i];
+  it.name=document.getElementById(`mn-${cat}-${i}`).value;
+  it.desc=document.getElementById(`md-${cat}-${i}`).value;
+  it.price=parseInt(document.getElementById(`mp-${cat}-${i}`).value)||0;
+  const tag=document.getElementById(`mt-${cat}-${i}`).value;
+  it.tags=tag?[tag]:[];
+  const urlVal=document.getElementById(`mi-${cat}-${i}`).value.trim();
+  if(urlVal&&urlVal!=='[uploaded]') it.img=urlVal;
+  try{
+    await syncMenuToSupabase();
+    renderMenuEditor();
+    toast('Item saved');
+  }catch(err){console.error(err);toast('Failed to save item');}
+}
+async function delMed(cat,i){
+  if(!confirm('Delete this item?'))return;
+  menuData[cat].items.splice(i,1);
+  try{
+    await syncMenuToSupabase();
+    renderMenuEditor();
+    toast('Item removed');
+  }catch(err){console.error(err);toast('Failed to remove item');}
+}
+
+// ── SLOT MANAGER ──
+function renderSlotManager(){
+  document.getElementById('slot-mgr-wrap').innerHTML=
+    `<div class="slot-mgr-hdr">Time Slot · Capacity · Status</div>
+     <div class="slot-mgr-grid">${slotData.map((s,i)=>`
+       <div class="slot-mgr-item">
+         <span class="slot-mgr-time">${s.time}</span>
+         <div class="slot-mgr-controls">
+           <span style="font-size:.7rem;color:var(--muted);margin-right:.25rem">Seats:</span>
+           <input type="number" class="slot-num-input" id="sc-${i}" value="${s.capacity}" min="0" max="50"/>
+           <label class="slot-status-toggle">
+             <input type="checkbox" id="sf-${i}" ${s.filled?'checked':''}/>
+             Filled
+           </label>
+         </div>
+       </div>`).join('')}
+     </div>
+     <div class="slot-save-row">
+       <button class="submit-btn" style="width:auto;padding:.6rem 2rem;margin-top:0" onclick="saveSlots()">Save All Slots</button>
+     </div>`;
+}
+async function saveSlots(){
+  slotData.forEach((s,i)=>{
+    s.capacity=parseInt(document.getElementById(`sc-${i}`).value)||0;
+    s.filled=document.getElementById(`sf-${i}`).checked||s.capacity===0;
+  });
+  try{
+    await syncSlotsToSupabase();
+    toast('Slot settings saved');
+  }catch(err){console.error(err);toast('Failed to save slots');}
+}
+
+// ── HOURS EDITOR ──
+function renderHrsEditor(){
+  document.getElementById('hrs-wrap').innerHTML=
+    hoursData.map((h,i)=>`
+      <div class="hrs-adm-row">
+        <div class="hrs-day">${h.day}</div>
+        <div><label class="fl">Opens</label><input type="time" id="ho-${i}" value="${h.open}" ${h.closed?'disabled':''}/></div>
+        <div><label class="fl">Closes</label><input type="time" id="hc-${i}" value="${h.close}" ${h.closed?'disabled':''}/></div>
+        <label class="closed-tog"><input type="checkbox" id="hcl-${i}" ${h.closed?'checked':''} onchange="togDay(${i})"/> Closed</label>
+      </div>`).join('')+
+    `<div class="hrs-save-foot"><button class="submit-btn" style="width:auto;padding:.6rem 2rem;margin-top:0" onclick="saveHrs()">Save All Hours</button></div>`;
+}
+function togDay(i){const cl=document.getElementById(`hcl-${i}`).checked;document.getElementById(`ho-${i}`).disabled=cl;document.getElementById(`hc-${i}`).disabled=cl;}
+async function saveHrs(){
+  hoursData.forEach((h,i)=>{
+    h.closed=document.getElementById(`hcl-${i}`).checked;
+    h.open=document.getElementById(`ho-${i}`).value;
+    h.close=document.getElementById(`hc-${i}`).value;
+  });
+  try{
+    await syncHoursToSupabase();
+    toast('Opening hours saved');
+  }catch(err){console.error(err);toast('Failed to save hours');}
+}
+async function removeJob(i){
+  if(!confirm('Remove this vacancy?'))return;
+  jobsData.splice(i,1);
+  try{
+    await syncJobsToSupabase();
+    renderAppsAdmin();
+    toast('Vacancy removed');
+  }catch(err){console.error(err);toast('Failed to remove vacancy');}
+}
+
+// ── GALLERY EDITOR ──
+// contactData mirrors what's shown publicly
+const contactData={
+  name:'Verdana',
+  addr1:'12, Jubilee Hills Road No. 36',
+  addr2:'Hyderabad, Telangana 500033',
+  phone:'+91 40 2345 6789',
+  email:'reservations@verdana.in',
+  web:'www.verdana.in',
+  evName:'Priya Nair',
+  evEmail:'events@verdana.in',
+  evPhone:'',
+  note:'For corporate dinners, celebrations, and private dining enquiries:'
+};
+
+function toggleAddPhoto(){
+  const f=document.getElementById('add-photo-form');
+  f.style.display=f.style.display==='none'?'block':'none';
+  if(f.style.display==='block'){
+    document.getElementById('ng-cap').value='';
+    document.getElementById('ng-url').value='';
+    document.getElementById('ng-file').value='';
+    document.getElementById('ng-preview').style.display='none';
+    document.getElementById('ng-cls').value='';
+  }
+}
+
+function previewGalleryUpload(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    document.getElementById('ng-preview-img').src=e.target.result;
+    document.getElementById('ng-preview').style.display='block';
+    document.getElementById('ng-url').value=''; // clear URL field
+  };
+  reader.readAsDataURL(file);
+}
+
+async function addGalleryPhoto(){
+  const cap=document.getElementById('ng-cap').value.trim();
+  const cls=document.getElementById('ng-cls').value;
+  let src=document.getElementById('ng-url').value.trim();
+  const previewSrc=document.getElementById('ng-preview-img').src;
+  if(!src && previewSrc && previewSrc.startsWith('data:')) src=previewSrc;
+  if(!src){toast('Please enter an image URL or upload a file');return;}
+  if(!cap){toast('Please enter a caption');return;}
+  galleryImgs.push({src,cap,cls});
+  try{
+    await syncGalleryToSupabase();
+    renderGalleryEditor();
+    toggleAddPhoto();
+    toast('Photo added to gallery');
+  }catch(err){console.error(err);toast('Failed to add photo');}
+}
+
+async function movePhoto(i,dir){
+  const j=i+dir;
+  if(j<0||j>=galleryImgs.length) return;
+  [galleryImgs[i],galleryImgs[j]]=[galleryImgs[j],galleryImgs[i]];
+  try{
+    await syncGalleryToSupabase();
+    renderGalleryEditor();
+  }catch(err){console.error(err);toast('Failed to reorder photo');}
+}
+
+async function deletePhoto(i){
+  if(!confirm('Remove this photo from the gallery?')) return;
+  galleryImgs.splice(i,1);
+  try{
+    await syncGalleryToSupabase();
+    renderGalleryEditor();
+    toast('Photo removed');
+  }catch(err){console.error(err);toast('Failed to remove photo');}
+}
+
+async function editPhotoCaption(i){
+  const newCap=document.getElementById('gc-cap-'+i).value;
+  const newCls=document.getElementById('gc-cls-'+i).value;
+  galleryImgs[i].cap=newCap;
+  galleryImgs[i].cls=newCls;
+  try{
+    await syncGalleryToSupabase();
+    toast('Photo updated');
+  }catch(err){console.error(err);toast('Failed to update photo');}
+}
+
+function renderGalleryEditor(){
+  const el=document.getElementById('gallery-editor-grid');
+  if(!el) return;
+  if(galleryImgs.length===0){el.innerHTML='<div class="empty-st">No photos in gallery yet.</div>';return;}
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;margin-top:.5rem">'
+    +galleryImgs.map((g,i)=>
+      '<div style="background:var(--white);border:1px solid var(--border);overflow:hidden">'
+        +'<div style="height:160px;overflow:hidden;position:relative">'
+          +'<img src="'+g.src+'" alt="'+g.cap+'" style="width:100%;height:100%;object-fit:cover"/>'
+          +'<div style="position:absolute;top:.5rem;right:.5rem;display:flex;gap:.35rem">'
+            +(i>0?'<button onclick="movePhoto('+i+',-1)" style="padding:.25rem .5rem;background:rgba(0,0,0,.55);color:#fff;border:none;cursor:pointer;font-size:.75rem">↑</button>':'')
+            +(i<galleryImgs.length-1?'<button onclick="movePhoto('+i+',1)" style="padding:.25rem .5rem;background:rgba(0,0,0,.55);color:#fff;border:none;cursor:pointer;font-size:.75rem">↓</button>':'')
+            +'<button onclick="deletePhoto('+i+')" style="padding:.25rem .5rem;background:rgba(163,45,45,.8);color:#fff;border:none;cursor:pointer;font-size:.75rem">✕</button>'
+          +'</div>'
+        +'</div>'
+        +'<div style="padding:.75rem">'
+          +'<div class="fg" style="margin-bottom:.6rem"><label>Caption</label><input type="text" id="gc-cap-'+i+'" value="'+g.cap+'" style="padding:.35rem .6rem;border:1px solid var(--border);font-family:var(--fb);font-size:.82rem;width:100%;background:var(--cream)"/></div>'
+          +'<div class="fg" style="margin-bottom:.75rem"><label>Size</label>'
+            +'<select id="gc-cls-'+i+'" style="padding:.35rem .5rem;border:1px solid var(--border);font-family:var(--fb);font-size:.82rem;background:var(--cream);width:100%;appearance:none">'
+              +'<option value="" '+(g.cls===''?'selected':'')+'>Normal</option>'
+              +'<option value="tall" '+(g.cls==='tall'?'selected':'')+'>Tall</option>'
+              +'<option value="wide" '+(g.cls==='wide'?'selected':'')+'>Wide</option>'
+            +'</select></div>'
+          +'<button onclick="editPhotoCaption('+i+')" class="msave" style="width:100%;padding:.5rem">Save Changes</button>'
+        +'</div>'
+      +'</div>'
+    ).join('')+'</div>';
+}
+
+// ── CONTACT EDITOR ──
+function renderContactEditor(){
+  // Populate fields from contactData
+  const fields={
+    'ct-name':contactData.name,'ct-addr1':contactData.addr1,'ct-addr2':contactData.addr2,
+    'ct-phone':contactData.phone,'ct-email':contactData.email,'ct-web':contactData.web,
+    'ct-ev-name':contactData.evName,'ct-ev-email':contactData.evEmail,
+    'ct-ev-phone':contactData.evPhone,'ct-note':contactData.note
+  };
+  Object.entries(fields).forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    if(el) el.value=val;
+  });
+}
+
+async function saveContact(){
+  contactData.name=document.getElementById('ct-name').value.trim();
+  contactData.addr1=document.getElementById('ct-addr1').value.trim();
+  contactData.addr2=document.getElementById('ct-addr2').value.trim();
+  contactData.phone=document.getElementById('ct-phone').value.trim();
+  contactData.email=document.getElementById('ct-email').value.trim();
+  contactData.web=document.getElementById('ct-web').value.trim();
+  contactData.evName=document.getElementById('ct-ev-name').value.trim();
+  contactData.evEmail=document.getElementById('ct-ev-email').value.trim();
+  contactData.evPhone=document.getElementById('ct-ev-phone').value.trim();
+  contactData.note=document.getElementById('ct-note').value.trim();
+  try{
+    await saveContactToSupabase();
+    toast('Contact info saved — Contact page updated');
+  }catch(err){console.error(err);toast('Failed to save contact info');}
+}
+
+function renderPublicContact(){
+  // Update the public contact page dynamically
+  const addr=document.querySelector('.ci-txt span[data-field="address"]');
+  // We re-render the whole contact page sections
+  const items=document.querySelectorAll('.ci .ci-txt');
+  if(items.length>=3){
+    items[0].innerHTML='<strong>Address</strong><span>'+contactData.addr1+'<br>'+contactData.addr2+'</span>';
+    items[1].innerHTML='<strong>Phone</strong><span>'+contactData.phone+'</span>';
+    items[2].innerHTML='<strong>Email</strong><span>'+contactData.email+'</span>';
+  }
+  const evItems=document.querySelectorAll('.ci .ci-txt');
+  if(evItems.length>=4){
+    evItems[3].innerHTML='<strong>Events Manager</strong><span>'+contactData.evName+' · '+contactData.evEmail+(contactData.evPhone?' · '+contactData.evPhone:'')+'</span>';
+  }
+}
+
+// ── TOAST ──
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+// ── INIT ──
+initApp();
+
+</script>
+</body>
+</html>
