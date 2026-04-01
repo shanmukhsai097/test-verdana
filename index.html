@@ -25,6 +25,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(249,247,242,
 .nav-links a:hover{color:var(--sage-dark)}
 .nav-book{background:var(--sage-dark);color:#fff;border:none;padding:.5rem 1.1rem;font-family:var(--fb);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background .2s;white-space:nowrap}
 .nav-book:hover{background:var(--sage)}
+.lang-switch{padding:.4rem .6rem;border:1px solid var(--border);background:var(--white);font-family:var(--fb);font-size:.72rem;color:var(--muted)}
 
 /* ── PAGES ── */
 .page{display:none;min-height:100vh;padding-top:64px}
@@ -294,7 +295,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(249,247,242,
     <li><a href="#" onclick="go('careers')">Careers</a></li>
     <li><a href="#" onclick="go('admin')" style="color:var(--sage-dark);font-weight:500">Admin</a></li>
   </ul>
-  <button class="nav-book" onclick="go('booking')">Reserve a Table</button>
+  <div style="display:flex;align-items:center;gap:.6rem">
+    <select id="lang-switch" class="lang-switch" onchange="setLanguage(this.value)">
+      <option value="en">EN</option>
+      <option value="de">DE</option>
+      <option value="fr">FR</option>
+      <option value="es">ES</option>
+    </select>
+    <button class="nav-book" onclick="go('booking')">Reserve a Table</button>
+  </div>
 </nav>
 
 <!-- ══════════════ HOME ══════════════ -->
@@ -658,13 +667,354 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(249,247,242,
   <img id="menu-lb-img" src="" alt="" onclick="event.stopPropagation()"/>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 const SUPABASE_URL = "https://bbbupxlsbqkmuhbsjhra.supabase.co";
 const SUPABASE_KEY = "sb_publishable_qZsrydZiW8J-NHTUZTMK_w_8WkfThfw";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const currentLangState = { value: localStorage.getItem('verdana_lang') || 'en' };
+const ALWAYS_OPEN_SLOT_DEFAULTS = {'12:00 PM':6,'1:00 PM':8,'2:30 PM':6,'8:00 PM':8};
+
+const translations = {
+  en: {
+    nav_home:'Home', nav_menu:'Menu', nav_gallery:'Gallery', nav_res:'Reservations', nav_contact:'Contact', nav_careers:'Careers', nav_admin:'Admin', nav_book:'Reserve a Table',
+    hero_badge:'Est. 2019 · Hyderabad', hero_title:'Where <em>Nature</em><br>Meets the Table', hero_sub:'Seasonal menus, curated wines, and unhurried evenings',
+    explore_menu:'Explore Menu', why_label:'Why Verdana', why_title:'An <em>Uncompromising</em> Experience',
+    farm_title:'Farm to Fork', farm_desc:'Ingredients from curated local farms and artisan producers every morning.',
+    som_title:'Sommelier-Curated', som_desc:'A cellar of 200+ wines, paired to each dish by our resident sommelier.',
+    priv_title:'Private Dining', priv_desc:'Intimate rooms for corporate events and celebrations up to 30 guests.',
+    story_label:'Our Story', story_title:'A Labour of <em>Love</em>',
+    story_p1:'Verdana was born from a simple belief — that exceptional food should be paired with an equally exceptional atmosphere. Our head chef brings two decades of Michelin-starred experience to every plate, blending classical French technique with the bold flavours of South India.',
+    story_p2:'Every dish is a conversation between tradition and the season. We change our menu quarterly.',
+    awards:'Awards', wines:'Wines', rating:'Rating',
+    menu_kitchen:'Verdana Kitchen', seasonal_menu:'Seasonal <em>Menu</em>', visual_story:'Visual Story', experience_title:'The <em>Verdana</em> Experience',
+    reservations_label:'Reservations', reserve_your:'Reserve Your <em>Table</em>', book_hint:'We recommend booking at least 48 hours in advance',
+    reservation_details:'Reservation Details', date:'Date', occasion:'Occasion (optional)', none:'— None —',
+    guest_breakdown:'Guest Breakdown', how_many:'How many guests in each group?', adults:'Adults', adults_desc:'Age 13 and above', children:'Children', children_desc:"Age 4–12 · Children's menu available", infants:'Infants', infants_desc:'Under 4 · High chairs on request',
+    child_note:"🍃 Children's menu offers smaller portions of our seasonal dishes.", select_slot:'Select a Time Slot', available:'Available', filled:'Filled', selected:'Selected', contact_info:'Contact Information',
+    first_name:'First Name', last_name:'Last Name', email:'Email', phone:'Phone', special_requests:'Special Requests', confirm_reservation:'Confirm Reservation',
+    privacy_notice:'🔒 <strong>Privacy notice:</strong> Your personal details (name, email, phone) will be permanently deleted from our records once your visit is complete and the reservation is closed by our team.',
+    reservation_requested:'Reservation Requested!', thanks_line:"Thank you, <strong id='cn-name'></strong>. Your table for <strong id='cn-details'></strong> has been received. We'll confirm via email to <strong id='cn-email'></strong> within 2 hours.",
+    privacy_notice_2:'🔒 <strong>Data privacy:</strong> Your personal information will be permanently deleted from our system once your visit is complete and marked closed by our team. We do not share your data with third parties.',
+    questions_call:'Questions? Call +91 40 2345 6789',
+    find_us:'Find Us', contact_verdana:'Contact <em>Verdana</em>', get_in_touch:'Get in Touch', address:'Address', private_events:'Private Events', events_manager:'Events Manager', opening_hours:'Opening Hours', reservations_recommended:'Reservations strongly recommended.',
+    join_team:'Join the Team', careers_at:'Careers at <em>Verdana</em>', careers_intro:"We believe great dining starts with great people. We're always looking for passionate individuals who share our commitment to excellence, hospitality, and craft.",
+    apply_now:'Apply Now', no_jobs:'No vacancies at this time. Please check back soon!',
+    apply_received:'Application Received!', apply_received_desc:"We'll review your application and be in touch within 5–7 business days.", years_exp:'Years of Experience', cover_note:'Cover Note', submit_application:'Submit Application',
+    admin_panel:'Admin Panel', manage_admin:'Manage reservations, menu, hours and more', username:'Username', password:'Password', invalid_credentials:'Invalid credentials. Try admin / verdana2024', sign_in:'Sign In', demo:'Demo: admin / verdana2024',
+    admin_header:'Verdana Admin', sign_out:'Sign Out', reservations_tab:'Reservations', menu_editor_tab:'Menu Editor', slot_manager_tab:'Slot Manager', opening_hours_tab:'Opening Hours', gallery_tab:'Gallery', contact_info_tab:'Contact Info', applications_tab:'Applications',
+    total:'Total', pending:'Pending', confirmed:'Confirmed', closed_rejected:'Closed/Rejected', all:'All', rejected:'Rejected',
+    no_reservations_found:'No reservations found.', no_filter_reservations:'No {status} reservations found.',
+    confirm:'Confirm', mark_filled:'Mark Filled', reject:'Reject', clear_data:'Clear Data', delete:'Delete', kids:'Kids',
+    menu_editor_title:'Menu Editor', menu_editor_desc:'Add, edit or remove dishes. Upload a photo for each item — changes reflect instantly on the public menu.',
+    slot_manager_title:'Slot Manager', slot_manager_desc:'Set the number of available seats per time slot and mark slots as filled/open. Changes reflect immediately on the booking page.',
+    hours_editor_desc:'Set open/close times per day. Check "Closed" to mark a day off.',
+    gallery_editor_title:'Gallery Editor', gallery_editor_desc:'Add, reorder or remove photos. Paste a URL or upload from your device. Changes show on the Gallery page instantly.', add_photo:'+ Add Photo', new_gallery_photo:'New Gallery Photo', caption:'Caption', size:'Size', normal:'Normal', tall:'Tall (double height)', wide:'Wide (double width)', image_url:'Image URL', or_upload:'— or upload a file —', add_to_gallery:'Add to Gallery', cancel:'Cancel',
+    contact_editor_title:'Contact Information', contact_editor_desc:'Edit all contact details shown on the public Contact page.', general_contact:'General Contact', restaurant_name:'Restaurant Name', address_line1:'Address Line 1', address_line2:'Address Line 2', website:'Website', private_events_contact:'Private Events Contact', events_manager_name:'Events Manager Name', events_email:'Events Email', events_phone:'Events Phone (optional)', extra_note:'Extra Note', save_contact_info:'Save Contact Info',
+    applications_vacancies:'Applications & Vacancies', manage_jobs:'Manage job listings and review applicants.', add_vacancy:'+ Add Vacancy', new_vacancy:'New Vacancy', job_title:'Job Title', department:'Department', type:'Type', location:'Location', description:'Description', publish_vacancy:'Publish Vacancy',
+    current_vacancies:'Current Vacancies', received_applications:'Received Applications', remove:'Remove', shortlist:'Shortlist', no_applications:'No applications received yet.',
+    seats:'seats', seat:'seat', no_photo:'No photo', closed:'Closed',
+    cat_starters:'Starters', cat_mains:'Mains', cat_desserts:'Desserts', cat_drinks:'Drinks',
+    tag_vegetarian:'Vegetarian', tag_gluten:'Gluten Free', tag_signature:"Chef's Signature",
+    reservation_updated:'Reservation updated', guest_data_cleared:'Guest data cleared'
+  },
+  de: {
+    nav_home:'Startseite', nav_menu:'Speisekarte', nav_gallery:'Galerie', nav_res:'Reservierungen', nav_contact:'Kontakt', nav_careers:'Karriere', nav_admin:'Admin', nav_book:'Tisch reservieren',
+    hero_badge:'Gegr. 2019 · Hyderabad', hero_title:'Wo <em>Natur</em><br>auf den Tisch trifft', hero_sub:'Saisonale Menüs, kuratierte Weine und entspannte Abende',
+    explore_menu:'Menü entdecken', why_label:'Warum Verdana', why_title:'Ein <em>außergewöhnliches</em> Erlebnis',
+    farm_title:'Vom Hof auf den Tisch', farm_desc:'Zutaten von ausgewählten lokalen Höfen und handwerklichen Produzenten jeden Morgen.',
+    som_title:'Vom Sommelier kuratiert', som_desc:'Ein Keller mit über 200 Weinen, abgestimmt auf jedes Gericht.',
+    priv_title:'Private Dining', priv_desc:'Intime Räume für Firmenveranstaltungen und Feiern mit bis zu 30 Gästen.',
+    story_label:'Unsere Geschichte', story_title:'Eine Arbeit aus <em>Leidenschaft</em>',
+    story_p1:'Verdana entstand aus dem einfachen Glauben, dass außergewöhnliches Essen mit einer ebenso außergewöhnlichen Atmosphäre einhergehen sollte. Unser Küchenchef bringt zwei Jahrzehnte Michelin-Erfahrung auf jeden Teller.',
+    story_p2:'Jedes Gericht ist ein Gespräch zwischen Tradition und Jahreszeit. Unser Menü wechselt vierteljährlich.',
+    awards:'Auszeichnungen', wines:'Weine', rating:'Bewertung',
+    menu_kitchen:'Verdana Küche', seasonal_menu:'Saisonales <em>Menü</em>', visual_story:'Visuelle Geschichte', experience_title:'Das <em>Verdana</em>-Erlebnis',
+    reservations_label:'Reservierungen', reserve_your:'Reservieren Sie Ihren <em>Tisch</em>', book_hint:'Wir empfehlen eine Reservierung mindestens 48 Stunden im Voraus',
+    reservation_details:'Reservierungsdetails', date:'Datum', occasion:'Anlass (optional)', none:'— Keiner —',
+    guest_breakdown:'Gästeaufteilung', how_many:'Wie viele Gäste in jeder Gruppe?', adults:'Erwachsene', adults_desc:'Ab 13 Jahren', children:'Kinder', children_desc:'4–12 Jahre · Kinderkarte verfügbar', infants:'Kleinkinder', infants_desc:'Unter 4 · Hochstühle auf Anfrage',
+    child_note:'🍃 Die Kinderkarte bietet kleinere Portionen unserer saisonalen Gerichte.', select_slot:'Wählen Sie ein Zeitfenster', available:'Verfügbar', filled:'Belegt', selected:'Ausgewählt', contact_info:'Kontaktinformationen',
+    first_name:'Vorname', last_name:'Nachname', email:'E-Mail', phone:'Telefon', special_requests:'Besondere Wünsche', confirm_reservation:'Reservierung bestätigen',
+    privacy_notice:'🔒 <strong>Datenschutzhinweis:</strong> Ihre personenbezogenen Daten werden nach Abschluss Ihres Besuchs dauerhaft gelöscht.',
+    reservation_requested:'Reservierungsanfrage erhalten!', thanks_line:"Danke, <strong id='cn-name'></strong>. Ihr Tisch für <strong id='cn-details'></strong> wurde empfangen. Wir bestätigen per E-Mail an <strong id='cn-email'></strong> innerhalb von 2 Stunden.",
+    privacy_notice_2:'🔒 <strong>Datenschutz:</strong> Ihre personenbezogenen Daten werden nach Abschluss Ihres Besuchs dauerhaft aus unserem System gelöscht.',
+    questions_call:'Fragen? Rufen Sie an: +91 40 2345 6789',
+    find_us:'Hier finden Sie uns', contact_verdana:'Kontakt <em>Verdana</em>', get_in_touch:'Kontakt aufnehmen', address:'Adresse', private_events:'Private Veranstaltungen', events_manager:'Eventmanager', opening_hours:'Öffnungszeiten', reservations_recommended:'Reservierungen werden dringend empfohlen.',
+    join_team:'Werden Sie Teil des Teams', careers_at:'Karriere bei <em>Verdana</em>', careers_intro:'Großartige Gastronomie beginnt mit großartigen Menschen. Wir suchen leidenschaftliche Persönlichkeiten mit Sinn für Exzellenz und Gastfreundschaft.',
+    apply_now:'Jetzt bewerben', no_jobs:'Derzeit keine offenen Stellen. Bitte schauen Sie bald wieder vorbei.',
+    apply_received:'Bewerbung erhalten!', apply_received_desc:'Wir prüfen Ihre Bewerbung und melden uns innerhalb von 5–7 Werktagen.', years_exp:'Berufserfahrung', cover_note:'Motivationsschreiben', submit_application:'Bewerbung senden',
+    admin_panel:'Admin-Bereich', manage_admin:'Reservierungen, Menü, Zeiten und mehr verwalten', username:'Benutzername', password:'Passwort', invalid_credentials:'Ungültige Anmeldedaten. Versuchen Sie admin / verdana2024', sign_in:'Anmelden', demo:'Demo: admin / verdana2024',
+    admin_header:'Verdana Admin', sign_out:'Abmelden', reservations_tab:'Reservierungen', menu_editor_tab:'Menü-Editor', slot_manager_tab:'Zeitfenster', opening_hours_tab:'Öffnungszeiten', gallery_tab:'Galerie', contact_info_tab:'Kontaktinfo', applications_tab:'Bewerbungen',
+    total:'Gesamt', pending:'Ausstehend', confirmed:'Bestätigt', closed_rejected:'Geschlossen/Abgelehnt', all:'Alle', rejected:'Abgelehnt',
+    no_reservations_found:'Keine Reservierungen gefunden.', no_filter_reservations:'Keine {status}-Reservierungen gefunden.',
+    confirm:'Bestätigen', mark_filled:'Als belegt markieren', reject:'Ablehnen', clear_data:'Daten löschen', delete:'Löschen', kids:'Kinder',
+    menu_editor_title:'Menü-Editor', menu_editor_desc:'Gerichte hinzufügen, bearbeiten oder entfernen. Änderungen erscheinen sofort im öffentlichen Menü.',
+    slot_manager_title:'Zeitfenster-Verwaltung', slot_manager_desc:'Verfügbare Sitzplätze pro Zeitfenster festlegen und Zeitfenster als belegt/offen markieren.',
+    hours_editor_desc:'Öffnungs- und Schließzeiten pro Tag festlegen. "Geschlossen" markiert einen freien Tag.',
+    gallery_editor_title:'Galerie-Editor', gallery_editor_desc:'Fotos hinzufügen, neu anordnen oder entfernen. Änderungen werden sofort in der Galerie angezeigt.', add_photo:'+ Foto hinzufügen', new_gallery_photo:'Neues Galeriefoto', caption:'Bildunterschrift', size:'Größe', normal:'Normal', tall:'Hoch (doppelte Höhe)', wide:'Breit (doppelte Breite)', image_url:'Bild-URL', or_upload:'— oder Datei hochladen —', add_to_gallery:'Zur Galerie hinzufügen', cancel:'Abbrechen',
+    contact_editor_title:'Kontaktinformationen', contact_editor_desc:'Alle Kontaktdaten auf der öffentlichen Kontaktseite bearbeiten.', general_contact:'Allgemeiner Kontakt', restaurant_name:'Restaurantname', address_line1:'Adresszeile 1', address_line2:'Adresszeile 2', website:'Website', private_events_contact:'Kontakt für private Veranstaltungen', events_manager_name:'Name des Eventmanagers', events_email:'Event-E-Mail', events_phone:'Event-Telefon (optional)', extra_note:'Zusätzliche Notiz', save_contact_info:'Kontaktinfo speichern',
+    applications_vacancies:'Bewerbungen & Stellen', manage_jobs:'Stellenanzeigen verwalten und Bewerbungen prüfen.', add_vacancy:'+ Stelle hinzufügen', new_vacancy:'Neue Stelle', job_title:'Stellentitel', department:'Abteilung', type:'Typ', location:'Ort', description:'Beschreibung', publish_vacancy:'Stelle veröffentlichen',
+    current_vacancies:'Aktuelle Stellen', received_applications:'Eingegangene Bewerbungen', remove:'Entfernen', shortlist:'In engere Wahl', no_applications:'Noch keine Bewerbungen eingegangen.',
+    seats:'Sitze', seat:'Sitz', no_photo:'Kein Foto', closed:'Geschlossen',
+    cat_starters:'Vorspeisen', cat_mains:'Hauptgerichte', cat_desserts:'Desserts', cat_drinks:'Getränke',
+    tag_vegetarian:'Vegetarisch', tag_gluten:'Glutenfrei', tag_signature:'Signaturgericht',
+    reservation_updated:'Reservierung aktualisiert', guest_data_cleared:'Gastdaten gelöscht'
+  },
+  fr: {
+    nav_home:'Accueil', nav_menu:'Menu', nav_gallery:'Galerie', nav_res:'Réservations', nav_contact:'Contact', nav_careers:'Carrières', nav_admin:'Admin', nav_book:'Réserver une table',
+    hero_badge:'Depuis 2019 · Hyderabad', hero_title:'Là où la <em>nature</em><br>rencontre la table', hero_sub:'Menus de saison, vins sélectionnés et soirées sans hâte',
+    explore_menu:'Découvrir le menu', why_label:'Pourquoi Verdana', why_title:'Une expérience <em>exceptionnelle</em>',
+    farm_title:'Du producteur à l’assiette', farm_desc:'Des ingrédients issus de fermes locales sélectionnées et de producteurs artisanaux chaque matin.',
+    som_title:'Sélection du sommelier', som_desc:'Une cave de plus de 200 vins, accordés à chaque plat.',
+    priv_title:'Dîner privé', priv_desc:'Des salons intimes pour événements d’entreprise et célébrations jusqu’à 30 invités.',
+    story_label:'Notre histoire', story_title:'Une œuvre de <em>passion</em>',
+    story_p1:'Verdana est né d’une conviction simple : une cuisine exceptionnelle mérite une atmosphère tout aussi exceptionnelle. Notre chef apporte deux décennies d’expérience étoilée Michelin à chaque assiette.',
+    story_p2:'Chaque plat est un dialogue entre tradition et saison. Notre menu change chaque trimestre.',
+    awards:'Récompenses', wines:'Vins', rating:'Note',
+    menu_kitchen:'Cuisine Verdana', seasonal_menu:'Menu <em>de saison</em>', visual_story:'Histoire visuelle', experience_title:'L’expérience <em>Verdana</em>',
+    reservations_label:'Réservations', reserve_your:'Réservez votre <em>table</em>', book_hint:'Nous recommandons de réserver au moins 48 heures à l’avance',
+    reservation_details:'Détails de la réservation', date:'Date', occasion:'Occasion (facultatif)', none:'— Aucune —',
+    guest_breakdown:'Répartition des invités', how_many:'Combien d’invités dans chaque groupe ?', adults:'Adultes', adults_desc:'13 ans et plus', children:'Enfants', children_desc:'4–12 ans · Menu enfant disponible', infants:'Bébés', infants_desc:'Moins de 4 ans · Chaises hautes sur demande',
+    child_note:'🍃 Le menu enfant propose des portions plus petites de nos plats de saison.', select_slot:'Choisissez un créneau', available:'Disponible', filled:'Complet', selected:'Sélectionné', contact_info:'Coordonnées',
+    first_name:'Prénom', last_name:'Nom', email:'E-mail', phone:'Téléphone', special_requests:'Demandes spéciales', confirm_reservation:'Confirmer la réservation',
+    privacy_notice:'🔒 <strong>Confidentialité :</strong> Vos données personnelles seront supprimées définitivement après votre visite.',
+    reservation_requested:'Demande de réservation reçue !', thanks_line:"Merci, <strong id='cn-name'></strong>. Votre table pour <strong id='cn-details'></strong> a bien été reçue. Nous confirmerons par e-mail à <strong id='cn-email'></strong> dans les 2 heures.",
+    privacy_notice_2:'🔒 <strong>Protection des données :</strong> Vos informations personnelles seront supprimées de notre système après votre visite.',
+    questions_call:'Questions ? Appelez le +91 40 2345 6789',
+    find_us:'Nous trouver', contact_verdana:'Contact <em>Verdana</em>', get_in_touch:'Nous contacter', address:'Adresse', private_events:'Événements privés', events_manager:'Responsable événements', opening_hours:'Horaires d’ouverture', reservations_recommended:'Réservation fortement recommandée.',
+    join_team:'Rejoignez l’équipe', careers_at:'Carrières chez <em>Verdana</em>', careers_intro:'Une grande expérience culinaire commence par de grandes personnes. Nous recherchons des profils passionnés.',
+    apply_now:'Postuler', no_jobs:'Aucun poste vacant pour le moment. Revenez bientôt.',
+    apply_received:'Candidature reçue !', apply_received_desc:'Nous examinerons votre candidature et vous répondrons sous 5 à 7 jours ouvrés.', years_exp:'Années d’expérience', cover_note:'Lettre de motivation', submit_application:'Envoyer la candidature',
+    admin_panel:'Panneau admin', manage_admin:'Gérer réservations, menu, horaires et plus', username:'Nom d’utilisateur', password:'Mot de passe', invalid_credentials:'Identifiants invalides. Essayez admin / verdana2024', sign_in:'Se connecter', demo:'Démo : admin / verdana2024',
+    admin_header:'Admin Verdana', sign_out:'Se déconnecter', reservations_tab:'Réservations', menu_editor_tab:'Éditeur de menu', slot_manager_tab:'Gestion des créneaux', opening_hours_tab:'Horaires', gallery_tab:'Galerie', contact_info_tab:'Coordonnées', applications_tab:'Candidatures',
+    total:'Total', pending:'En attente', confirmed:'Confirmé', closed_rejected:'Clos/Rejeté', all:'Tous', rejected:'Rejeté',
+    no_reservations_found:'Aucune réservation trouvée.', no_filter_reservations:'Aucune réservation {status} trouvée.',
+    confirm:'Confirmer', mark_filled:'Marquer complet', reject:'Rejeter', clear_data:'Effacer les données', delete:'Supprimer', kids:'Enfants',
+    menu_editor_title:'Éditeur de menu', menu_editor_desc:'Ajouter, modifier ou supprimer des plats. Les changements apparaissent instantanément.', slot_manager_title:'Gestion des créneaux', slot_manager_desc:'Définir les places disponibles et marquer les créneaux complets/ouvert.', hours_editor_desc:'Définir les horaires par jour. Cochez "Fermé" pour un jour de fermeture.',
+    gallery_editor_title:'Éditeur de galerie', gallery_editor_desc:'Ajouter, réorganiser ou supprimer des photos.', add_photo:'+ Ajouter une photo', new_gallery_photo:'Nouvelle photo de galerie', caption:'Légende', size:'Taille', normal:'Normal', tall:'Haut (double hauteur)', wide:'Large (double largeur)', image_url:'URL de l’image', or_upload:'— ou téléverser un fichier —', add_to_gallery:'Ajouter à la galerie', cancel:'Annuler',
+    contact_editor_title:'Coordonnées', contact_editor_desc:'Modifier toutes les coordonnées affichées sur la page Contact.', general_contact:'Contact général', restaurant_name:'Nom du restaurant', address_line1:'Adresse ligne 1', address_line2:'Adresse ligne 2', website:'Site web', private_events_contact:'Contact événements privés', events_manager_name:'Nom du responsable événements', events_email:'E-mail événements', events_phone:'Téléphone événements (facultatif)', extra_note:'Note supplémentaire', save_contact_info:'Enregistrer les coordonnées',
+    applications_vacancies:'Candidatures & postes', manage_jobs:'Gérer les offres d’emploi et examiner les candidatures.', add_vacancy:'+ Ajouter un poste', new_vacancy:'Nouveau poste', job_title:'Titre du poste', department:'Département', type:'Type', location:'Lieu', description:'Description', publish_vacancy:'Publier le poste',
+    current_vacancies:'Postes actuels', received_applications:'Candidatures reçues', remove:'Supprimer', shortlist:'Présélectionner', no_applications:'Aucune candidature reçue pour le moment.',
+    seats:'places', seat:'place', no_photo:'Pas de photo', closed:'Fermé',
+    cat_starters:'Entrées', cat_mains:'Plats', cat_desserts:'Desserts', cat_drinks:'Boissons',
+    tag_vegetarian:'Végétarien', tag_gluten:'Sans gluten', tag_signature:'Signature',
+    reservation_updated:'Réservation mise à jour', guest_data_cleared:'Données client effacées'
+  },
+  es: {
+    nav_home:'Inicio', nav_menu:'Menú', nav_gallery:'Galería', nav_res:'Reservas', nav_contact:'Contacto', nav_careers:'Carreras', nav_admin:'Admin', nav_book:'Reservar mesa',
+    hero_badge:'Desde 2019 · Hyderabad', hero_title:'Donde la <em>naturaleza</em><br>se encuentra con la mesa', hero_sub:'Menús de temporada, vinos seleccionados y veladas tranquilas',
+    explore_menu:'Explorar menú', why_label:'Por qué Verdana', why_title:'Una experiencia <em>inolvidable</em>',
+    farm_title:'De la granja a la mesa', farm_desc:'Ingredientes de granjas locales seleccionadas y productores artesanales cada mañana.',
+    som_title:'Curado por sommelier', som_desc:'Una bodega con más de 200 vinos, maridados con cada plato.',
+    priv_title:'Comedor privado', priv_desc:'Salas íntimas para eventos corporativos y celebraciones hasta 30 invitados.',
+    story_label:'Nuestra historia', story_title:'Una labor de <em>amor</em>',
+    story_p1:'Verdana nació de una idea simple: la comida excepcional debe ir acompañada de una atmósfera igualmente excepcional. Nuestro chef aporta dos décadas de experiencia Michelin a cada plato.',
+    story_p2:'Cada plato es una conversación entre tradición y temporada. Cambiamos nuestro menú cada trimestre.',
+    awards:'Premios', wines:'Vinos', rating:'Calificación',
+    menu_kitchen:'Cocina Verdana', seasonal_menu:'Menú <em>de temporada</em>', visual_story:'Historia visual', experience_title:'La experiencia <em>Verdana</em>',
+    reservations_label:'Reservas', reserve_your:'Reserva tu <em>mesa</em>', book_hint:'Recomendamos reservar con al menos 48 horas de antelación',
+    reservation_details:'Detalles de la reserva', date:'Fecha', occasion:'Ocasión (opcional)', none:'— Ninguna —',
+    guest_breakdown:'Distribución de invitados', how_many:'¿Cuántos invitados hay en cada grupo?', adults:'Adultos', adults_desc:'13 años o más', children:'Niños', children_desc:'4–12 años · Menú infantil disponible', infants:'Bebés', infants_desc:'Menores de 4 · Sillas altas bajo petición',
+    child_note:'🍃 El menú infantil ofrece porciones más pequeñas de nuestros platos de temporada.', select_slot:'Selecciona una franja horaria', available:'Disponible', filled:'Completo', selected:'Seleccionado', contact_info:'Información de contacto',
+    first_name:'Nombre', last_name:'Apellido', email:'Correo electrónico', phone:'Teléfono', special_requests:'Solicitudes especiales', confirm_reservation:'Confirmar reserva',
+    privacy_notice:'🔒 <strong>Aviso de privacidad:</strong> Tus datos personales se eliminarán permanentemente después de tu visita.',
+    reservation_requested:'¡Solicitud de reserva recibida!', thanks_line:"Gracias, <strong id='cn-name'></strong>. Hemos recibido tu mesa para <strong id='cn-details'></strong>. Confirmaremos por correo a <strong id='cn-email'></strong> en un plazo de 2 horas.",
+    privacy_notice_2:'🔒 <strong>Privacidad de datos:</strong> Tu información personal se eliminará de nuestro sistema una vez completada tu visita.',
+    questions_call:'¿Preguntas? Llama al +91 40 2345 6789',
+    find_us:'Encuéntranos', contact_verdana:'Contacto <em>Verdana</em>', get_in_touch:'Ponte en contacto', address:'Dirección', private_events:'Eventos privados', events_manager:'Responsable de eventos', opening_hours:'Horario de apertura', reservations_recommended:'Se recomienda reservar.',
+    join_team:'Únete al equipo', careers_at:'Carreras en <em>Verdana</em>', careers_intro:'Creemos que una gran experiencia gastronómica comienza con grandes personas. Buscamos personas apasionadas.',
+    apply_now:'Solicitar', no_jobs:'No hay vacantes en este momento. Vuelve pronto.',
+    apply_received:'¡Solicitud recibida!', apply_received_desc:'Revisaremos tu solicitud y nos pondremos en contacto en 5–7 días hábiles.', years_exp:'Años de experiencia', cover_note:'Carta de presentación', submit_application:'Enviar solicitud',
+    admin_panel:'Panel de admin', manage_admin:'Gestiona reservas, menú, horarios y más', username:'Usuario', password:'Contraseña', invalid_credentials:'Credenciales inválidas. Prueba admin / verdana2024', sign_in:'Iniciar sesión', demo:'Demo: admin / verdana2024',
+    admin_header:'Admin Verdana', sign_out:'Cerrar sesión', reservations_tab:'Reservas', menu_editor_tab:'Editor de menú', slot_manager_tab:'Gestor de franjas', opening_hours_tab:'Horario', gallery_tab:'Galería', contact_info_tab:'Información de contacto', applications_tab:'Solicitudes',
+    total:'Total', pending:'Pendiente', confirmed:'Confirmado', closed_rejected:'Cerrado/Rechazado', all:'Todo', rejected:'Rechazado',
+    no_reservations_found:'No se encontraron reservas.', no_filter_reservations:'No se encontraron reservas {status}.',
+    confirm:'Confirmar', mark_filled:'Marcar completo', reject:'Rechazar', clear_data:'Borrar datos', delete:'Eliminar', kids:'Niños',
+    menu_editor_title:'Editor de menú', menu_editor_desc:'Añade, edita o elimina platos. Los cambios aparecen al instante.', slot_manager_title:'Gestor de franjas', slot_manager_desc:'Define plazas disponibles por horario y marca franjas como completas/abiertas.', hours_editor_desc:'Define horarios de apertura y cierre por día. Marca "Cerrado" para un día libre.',
+    gallery_editor_title:'Editor de galería', gallery_editor_desc:'Añade, reordena o elimina fotos.', add_photo:'+ Añadir foto', new_gallery_photo:'Nueva foto de galería', caption:'Subtítulo', size:'Tamaño', normal:'Normal', tall:'Alto (doble altura)', wide:'Ancho (doble ancho)', image_url:'URL de la imagen', or_upload:'— o subir un archivo —', add_to_gallery:'Añadir a la galería', cancel:'Cancelar',
+    contact_editor_title:'Información de contacto', contact_editor_desc:'Edita todos los datos de contacto mostrados en la página pública.', general_contact:'Contacto general', restaurant_name:'Nombre del restaurante', address_line1:'Dirección línea 1', address_line2:'Dirección línea 2', website:'Sitio web', private_events_contact:'Contacto de eventos privados', events_manager_name:'Nombre del responsable de eventos', events_email:'Correo de eventos', events_phone:'Teléfono de eventos (opcional)', extra_note:'Nota extra', save_contact_info:'Guardar información de contacto',
+    applications_vacancies:'Solicitudes y vacantes', manage_jobs:'Gestiona vacantes y revisa solicitantes.', add_vacancy:'+ Añadir vacante', new_vacancy:'Nueva vacante', job_title:'Título del puesto', department:'Departamento', type:'Tipo', location:'Ubicación', description:'Descripción', publish_vacancy:'Publicar vacante',
+    current_vacancies:'Vacantes actuales', received_applications:'Solicitudes recibidas', remove:'Eliminar', shortlist:'Preseleccionar', no_applications:'Aún no se han recibido solicitudes.',
+    seats:'asientos', seat:'asiento', no_photo:'Sin foto', closed:'Cerrado',
+    cat_starters:'Entrantes', cat_mains:'Platos principales', cat_desserts:'Postres', cat_drinks:'Bebidas',
+    tag_vegetarian:'Vegetariano', tag_gluten:'Sin gluten', tag_signature:'Especialidad',
+    reservation_updated:'Reserva actualizada', guest_data_cleared:'Datos del cliente borrados'
+  }
+};
+
+function t(key, vars = {}){
+  const lang = translations[currentLangState.value] || translations.en;
+  let value = lang[key] ?? translations.en[key] ?? key;
+  Object.entries(vars).forEach(([k,v]) => value = value.replace(`{${k}}`, v));
+  return value;
+}
+
+function translateCategoryLabel(key, fallback){
+  const map = { starters:'cat_starters', mains:'cat_mains', desserts:'cat_desserts', drinks:'cat_drinks' };
+  return t(map[key] || fallback, {});
+}
+
+function translateTag(tag){
+  const map = {'Vegetarian':'tag_vegetarian','Gluten Free':'tag_gluten',"Chef's Signature":'tag_signature'};
+  return t(map[tag] || tag);
+}
+
+function setLanguage(lang){
+  currentLangState.value = lang;
+  localStorage.setItem('verdana_lang', lang);
+  document.documentElement.lang = lang;
+  applyTranslations();
+}
+
+function applyTranslations(){
+  const navLinks = document.querySelectorAll('.nav-links a');
+  if(navLinks.length >= 7){
+    navLinks[0].textContent = t('nav_home');
+    navLinks[1].textContent = t('nav_menu');
+    navLinks[2].textContent = t('nav_gallery');
+    navLinks[3].textContent = t('nav_res');
+    navLinks[4].textContent = t('nav_contact');
+    navLinks[5].textContent = t('nav_careers');
+    navLinks[6].textContent = t('nav_admin');
+  }
+  const navBook = document.querySelector('.nav-book');
+  if(navBook) navBook.textContent = t('nav_book');
+  const langSwitch = document.getElementById('lang-switch');
+  if(langSwitch) langSwitch.value = currentLangState.value;
+
+  const heroBadge = document.querySelector('.hero-badge'); if(heroBadge) heroBadge.textContent = t('hero_badge');
+  const heroTitle = document.querySelector('.hero h1'); if(heroTitle) heroTitle.innerHTML = t('hero_title');
+  const heroSub = document.querySelector('.hero-sub'); if(heroSub) heroSub.textContent = t('hero_sub');
+  const heroBtns = document.querySelectorAll('.hero-ctas button'); if(heroBtns.length>=2){ heroBtns[0].textContent = t('nav_book'); heroBtns[1].textContent = t('explore_menu'); }
+
+  const homeSec = document.querySelectorAll('#page-home .sec');
+  if(homeSec.length >= 2){
+    const label = homeSec[0].querySelector('.sec-label'); if(label) label.textContent = t('why_label');
+    const title = homeSec[0].querySelector('.sec-title'); if(title) title.innerHTML = t('why_title');
+    const cards = homeSec[0].querySelectorAll('.hi-card');
+    if(cards.length>=3){
+      cards[0].querySelector('h3').textContent = t('farm_title'); cards[0].querySelector('p').textContent = t('farm_desc');
+      cards[1].querySelector('h3').textContent = t('som_title'); cards[1].querySelector('p').textContent = t('som_desc');
+      cards[2].querySelector('h3').textContent = t('priv_title'); cards[2].querySelector('p').textContent = t('priv_desc');
+    }
+    const aboutLabel = homeSec[1].querySelector('.sec-label'); if(aboutLabel) aboutLabel.textContent = t('story_label');
+    const aboutTitle = homeSec[1].querySelector('.sec-title'); if(aboutTitle) aboutTitle.innerHTML = t('story_title');
+    const aboutPs = homeSec[1].querySelectorAll('.about-text p');
+    if(aboutPs.length>=2){ aboutPs[0].textContent = t('story_p1'); aboutPs[1].textContent = t('story_p2'); }
+    const statLbls = homeSec[1].querySelectorAll('.stat-lbl');
+    if(statLbls.length>=3){ statLbls[0].textContent = t('awards'); statLbls[1].textContent = t('wines'); statLbls[2].textContent = t('rating'); }
+  }
+
+  const menuHero = document.querySelector('#page-menu .page-hero');
+  if(menuHero){
+    const els = menuHero.querySelectorAll('.sec-label, .sec-title');
+    if(els.length>=2){ els[0].textContent = t('menu_kitchen'); els[1].innerHTML = t('seasonal_menu'); }
+  }
+  const galleryHero = document.querySelector('#page-gallery .page-hero');
+  if(galleryHero){
+    const els = galleryHero.querySelectorAll('.sec-label, .sec-title');
+    if(els.length>=2){ els[0].textContent = t('visual_story'); els[1].innerHTML = t('experience_title'); }
+  }
+  const bookingHero = document.querySelector('#page-booking .page-hero');
+  if(bookingHero){
+    const sec = bookingHero.querySelector('.sec-label'); if(sec) sec.textContent = t('reservations_label');
+    const title = bookingHero.querySelector('.sec-title'); if(title) title.innerHTML = t('reserve_your');
+    const p = bookingHero.querySelector('p'); if(p) p.textContent = t('book_hint');
+  }
+  const bookingForm = document.getElementById('bk-form-wrap');
+  if(bookingForm){
+    const labels = bookingForm.querySelectorAll('.sec-label, .fg label, .guests-sec-title, .fs-title');
+    if(labels.length){
+      labels[0].textContent = t('reservation_details');
+      labels[1].textContent = t('date');
+      labels[2].textContent = t('occasion');
+      labels[3].textContent = t('guest_breakdown');
+      labels[4].textContent = t('how_many');
+      labels[5].textContent = t('select_slot');
+      labels[6].textContent = t('first_name');
+      labels[7].textContent = t('last_name');
+      labels[8].textContent = t('email');
+      labels[9].textContent = t('phone');
+      labels[10].textContent = t('special_requests');
+      labels[11].textContent = t('contact_info');
+    }
+    const guestRows = bookingForm.querySelectorAll('.g-row');
+    if(guestRows.length>=3){
+      guestRows[0].querySelector('strong').textContent = t('adults'); guestRows[0].querySelector('span').textContent = t('adults_desc');
+      guestRows[1].querySelector('strong').textContent = t('children'); guestRows[1].querySelector('span').textContent = t('children_desc');
+      guestRows[2].querySelector('strong').textContent = t('infants'); guestRows[2].querySelector('span').textContent = t('infants_desc');
+    }
+    const childNote = document.getElementById('child-note'); if(childNote) childNote.textContent = t('child_note');
+    const legend = bookingForm.querySelectorAll('.slot-legend span');
+    if(legend.length>=3){ legend[0].lastChild.textContent = ' ' + t('available'); legend[1].lastChild.textContent = ' ' + t('filled'); legend[2].lastChild.textContent = ' ' + t('selected'); }
+    const submit = bookingForm.querySelector('.submit-btn'); if(submit) submit.textContent = t('confirm_reservation');
+    const privacy = bookingForm.querySelector('.privacy-note'); if(privacy) privacy.innerHTML = t('privacy_notice');
+    const occ = document.getElementById('bk-occasion');
+    if(occ && occ.options.length>=6){ occ.options[0].textContent = t('none'); }
+  }
+  const confirmBox = document.getElementById('confirm-box');
+  if(confirmBox){
+    const title = confirmBox.querySelector('div[style*="font-family"]'); if(title) title.textContent = t('reservation_requested');
+    const p = confirmBox.querySelector('p'); if(p) p.innerHTML = t('thanks_line');
+    const priv = confirmBox.querySelector('.privacy-note'); if(priv) priv.innerHTML = t('privacy_notice_2');
+    const ps = confirmBox.querySelectorAll('p'); if(ps.length>1) ps[1].textContent = t('questions_call');
+  }
+
+  const contactPage = document.getElementById('page-contact');
+  if(contactPage){
+    const hero = contactPage.querySelector('.page-hero');
+    if(hero){
+      const sec = hero.querySelector('.sec-label'); if(sec) sec.textContent = t('find_us');
+      const title = hero.querySelector('.sec-title'); if(title) title.innerHTML = t('contact_verdana');
+    }
+    const ccs = contactPage.querySelectorAll('.cc h3');
+    if(ccs.length>=3){ ccs[0].textContent = t('get_in_touch'); ccs[1].textContent = t('private_events'); ccs[2].textContent = t('opening_hours'); }
+    renderPublicContact();
+    const note = contactPage.querySelector('.cc div[style*="margin-top:1.25rem"]'); if(note) note.textContent = t('reservations_recommended');
+  }
+
+  const careersPage = document.getElementById('page-careers');
+  if(careersPage){
+    const hero = careersPage.querySelector('.page-hero');
+    if(hero){
+      const sec = hero.querySelector('.sec-label'); if(sec) sec.textContent = t('join_team');
+      const title = hero.querySelector('.sec-title'); if(title) title.innerHTML = t('careers_at');
+    }
+    const intro = careersPage.querySelector('.careers-intro'); if(intro) intro.textContent = t('careers_intro');
+  }
+
+  const adminLoginBox = document.querySelector('.admin-login-box');
+  if(adminLoginBox){
+    const h2 = adminLoginBox.querySelector('h2'); if(h2) h2.textContent = t('admin_panel');
+    const ps = adminLoginBox.querySelectorAll('p');
+    if(ps.length>=2){ ps[0].textContent = t('manage_admin'); ps[1].textContent = t('demo'); }
+    const user = document.getElementById('adm-user'); if(user) user.placeholder = t('username');
+    const pass = document.getElementById('adm-pass'); if(pass) pass.placeholder = t('password');
+    const err = document.getElementById('adm-err'); if(err) err.textContent = t('invalid_credentials');
+    const btn = adminLoginBox.querySelector('.submit-btn'); if(btn) btn.textContent = t('sign_in');
+  }
+  const admDash = document.getElementById('adm-dash');
+  if(admDash){
+    const h2 = admDash.querySelector('.adm-header h2'); if(h2) h2.textContent = t('admin_header');
+    const out = admDash.querySelector('.logout-btn'); if(out) out.textContent = t('sign_out');
+    const tabs = admDash.querySelectorAll('.adm-tab');
+    if(tabs.length>=7){
+      tabs[0].textContent = t('reservations_tab'); tabs[1].textContent = t('menu_editor_tab'); tabs[2].textContent = t('slot_manager_tab');
+      tabs[3].textContent = t('opening_hours_tab'); tabs[4].textContent = t('gallery_tab'); tabs[5].textContent = t('contact_info_tab'); tabs[6].textContent = t('applications_tab');
+    }
+    const fbtns = admDash.querySelectorAll('.fbtn');
+    if(fbtns.length>=5){ fbtns[0].textContent = t('all'); fbtns[1].textContent = t('pending'); fbtns[2].textContent = t('confirmed'); fbtns[3].textContent = t('filled'); fbtns[4].textContent = t('rejected'); }
+  }
+
+if(document.getElementById('page-menu').classList.contains('active')) renderPubMenu();
+if(document.getElementById('page-gallery').classList.contains('active')) renderGallery();
+if(document.getElementById('page-booking').classList.contains('active')) renderSlotGrid();
+if(document.getElementById('page-careers').classList.contains('active')) renderJobs();
+if(admLoggedIn) renderAdmin();
+}
+
 // ══════════════ STATE ══════════════
 let bookings=[], applications=[];
 let bkFilter='all', selectedSlot=null, applyJobIdx=null, activeMedCat='', admLoggedIn=false;
@@ -672,15 +1022,15 @@ const guestCounts={adults:2,children:0,infants:0};
 
 // Slot data: {time, capacity, filled}
 const slotData=[
-  {time:'12:00 PM',capacity:0,filled:true},
+  {time:'12:00 PM',capacity:6,filled:false},
   {time:'12:30 PM',capacity:6,filled:false},
-  {time:'1:00 PM',capacity:0,filled:true},
+  {time:'1:00 PM',capacity:8,filled:false},
   {time:'1:30 PM',capacity:8,filled:false},
   {time:'2:00 PM',capacity:8,filled:false},
-  {time:'2:30 PM',capacity:0,filled:true},
+  {time:'2:30 PM',capacity:6,filled:false},
   {time:'7:00 PM',capacity:10,filled:false},
   {time:'7:30 PM',capacity:10,filled:false},
-  {time:'8:00 PM',capacity:0,filled:true},
+  {time:'8:00 PM',capacity:8,filled:false},
   {time:'8:30 PM',capacity:8,filled:false},
   {time:'9:00 PM',capacity:6,filled:false},
   {time:'9:30 PM',capacity:6,filled:false},
@@ -740,19 +1090,17 @@ const galleryImgs=[
   {src:'https://images.unsplash.com/photo-1424847651672-bf20a4b0982b?w=800&q=80',cap:'Wine Cellar',cls:''},
   {src:'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=900&q=80',cap:'Private Dining',cls:'wide'},
   {src:'https://images.unsplash.com/photo-1482275548304-a58859dc31b7?w=800&q=80',cap:'Coffee Service',cls:''},
-
 ];
+
 
 function replaceArray(target, items){
   target.length = 0;
   target.push(...items);
 }
-
 function replaceObject(target, source){
   Object.keys(target).forEach(k => delete target[k]);
   Object.assign(target, source);
 }
-
 function serializeMenuData(){
   const rows = [];
   Object.entries(menuData).forEach(([category_key, cat]) => {
@@ -771,128 +1119,73 @@ function serializeMenuData(){
   });
   return rows;
 }
-
 function buildMenuDataFromRows(rows){
   const grouped = {};
   rows.forEach(row => {
-    if(!grouped[row.category_key]){
-      grouped[row.category_key] = {label: row.category_label, items: []};
-    }
+    if(!grouped[row.category_key]) grouped[row.category_key] = {label: row.category_label, items: []};
     grouped[row.category_key].items.push({
-      id: row.id,
-      name: row.name,
-      desc: row.description,
-      price: row.price,
-      tags: row.tag ? [row.tag] : [],
-      img: row.img || ''
+      id: row.id, name: row.name, desc: row.description, price: row.price,
+      tags: row.tag ? [row.tag] : [], img: row.img || ''
     });
   });
   return grouped;
 }
-
 async function seedMenuIfEmpty(){
-  const { count, error } = await supabaseClient.from('menu_items').select('*', { count: 'exact', head: true });
+  const { count, error } = await supabaseClient.from('menu_items').select('*', { count:'exact', head:true });
   if(error) throw error;
   if(count === 0){
-    const { error: insertError } = await supabaseClient.from('menu_items').insert(serializeMenuData());
-    if(insertError) throw insertError;
+    const { error: e2 } = await supabaseClient.from('menu_items').insert(serializeMenuData());
+    if(e2) throw e2;
   }
 }
-
 async function seedSlotsIfEmpty(){
-  const { count, error } = await supabaseClient.from('slots').select('*', { count: 'exact', head: true });
+  const { count, error } = await supabaseClient.from('slots').select('*', { count:'exact', head:true });
   if(error) throw error;
   if(count === 0){
-    const rows = slotData.map((s, idx) => ({
-      slot_time: s.time,
-      capacity: s.capacity,
-      filled: s.filled,
-      sort_order: idx
-    }));
-    const { error: insertError } = await supabaseClient.from('slots').insert(rows);
-    if(insertError) throw insertError;
+    const rows = slotData.map((s, idx) => ({slot_time:s.time, capacity:s.capacity, filled:s.filled, sort_order:idx}));
+    const { error: e2 } = await supabaseClient.from('slots').insert(rows);
+    if(e2) throw e2;
   }
 }
-
 async function seedHoursIfEmpty(){
-  const { count, error } = await supabaseClient.from('opening_hours').select('*', { count: 'exact', head: true });
+  const { count, error } = await supabaseClient.from('opening_hours').select('*', { count:'exact', head:true });
   if(error) throw error;
   if(count === 0){
-    const rows = hoursData.map((h, idx) => ({
-      day: h.day,
-      closed: h.closed,
-      open_time: h.open,
-      close_time: h.close,
-      sort_order: idx
-    }));
-    const { error: insertError } = await supabaseClient.from('opening_hours').insert(rows);
-    if(insertError) throw insertError;
+    const rows = hoursData.map((h, idx) => ({day:h.day, closed:h.closed, open_time:h.open, close_time:h.close, sort_order:idx}));
+    const { error: e2 } = await supabaseClient.from('opening_hours').insert(rows);
+    if(e2) throw e2;
   }
 }
-
 async function seedGalleryIfEmpty(){
-  const { count, error } = await supabaseClient.from('gallery_images').select('*', { count: 'exact', head: true });
+  const { count, error } = await supabaseClient.from('gallery_images').select('*', { count:'exact', head:true });
   if(error) throw error;
   if(count === 0){
-    const rows = galleryImgs.map((g, idx) => ({
-      src: g.src,
-      cap: g.cap,
-      cls: g.cls || '',
-      sort_order: idx
-    }));
-    const { error: insertError } = await supabaseClient.from('gallery_images').insert(rows);
-    if(insertError) throw insertError;
+    const rows = galleryImgs.map((g, idx) => ({src:g.src, cap:g.cap, cls:g.cls||'', sort_order:idx}));
+    const { error: e2 } = await supabaseClient.from('gallery_images').insert(rows);
+    if(e2) throw e2;
   }
 }
-
 async function seedContactIfEmpty(){
-  const { data, error } = await supabaseClient.from('contact_info').select('id').eq('id', 1).maybeSingle();
+  const { data, error } = await supabaseClient.from('contact_info').select('id').eq('id',1).maybeSingle();
   if(error) throw error;
   if(!data){
-    const payload = {
-      id: 1,
-      name: contactData.name,
-      addr1: contactData.addr1,
-      addr2: contactData.addr2,
-      phone: contactData.phone,
-      email: contactData.email,
-      web: contactData.web,
-      ev_name: contactData.evName,
-      ev_email: contactData.evEmail,
-      ev_phone: contactData.evPhone,
-      note: contactData.note
-    };
-    const { error: insertError } = await supabaseClient.from('contact_info').insert(payload);
-    if(insertError) throw insertError;
+    const payload = {id:1, name:contactData.name, addr1:contactData.addr1, addr2:contactData.addr2, phone:contactData.phone, email:contactData.email, web:contactData.web, ev_name:contactData.evName, ev_email:contactData.evEmail, ev_phone:contactData.evPhone, note:contactData.note};
+    const { error: e2 } = await supabaseClient.from('contact_info').insert(payload);
+    if(e2) throw e2;
   }
 }
-
 async function seedJobsIfEmpty(){
-  const { count, error } = await supabaseClient.from('jobs').select('*', { count: 'exact', head: true });
+  const { count, error } = await supabaseClient.from('jobs').select('*', { count:'exact', head:true });
   if(error) throw error;
   if(count === 0){
-    const rows = jobsData.map((j, idx) => ({
-      title: j.title,
-      dept: j.dept,
-      type: j.type,
-      loc: j.loc,
-      description: j.desc,
-      sort_order: idx
-    }));
-    const { error: insertError } = await supabaseClient.from('jobs').insert(rows);
-    if(insertError) throw insertError;
+    const rows = jobsData.map((j, idx) => ({title:j.title, dept:j.dept, type:j.type, loc:j.loc, description:j.desc, sort_order:idx}));
+    const { error: e2 } = await supabaseClient.from('jobs').insert(rows);
+    if(e2) throw e2;
   }
 }
-
 async function ensureSeedData(){
-  await seedMenuIfEmpty();
-  await seedSlotsIfEmpty();
-  await seedHoursIfEmpty();
-  await seedGalleryIfEmpty();
-  await seedContactIfEmpty();
-  await seedJobsIfEmpty();
+  await seedMenuIfEmpty(); await seedSlotsIfEmpty(); await seedHoursIfEmpty(); await seedGalleryIfEmpty(); await seedContactIfEmpty(); await seedJobsIfEmpty();
 }
-
 async function loadMenuFromSupabase(){
   const { data, error } = await supabaseClient.from('menu_items').select('*').order('category_key').order('sort_order');
   if(error) throw error;
@@ -900,240 +1193,117 @@ async function loadMenuFromSupabase(){
   if(!pubMenuTab || !menuData[pubMenuTab]) pubMenuTab = Object.keys(menuData)[0] || '';
   if(!activeMedCat || !menuData[activeMedCat]) activeMedCat = Object.keys(menuData)[0] || '';
 }
-
 async function loadSlotsFromSupabase(){
   const { data, error } = await supabaseClient.from('slots').select('*').order('sort_order');
   if(error) throw error;
-  replaceArray(slotData, (data || []).map(s => ({
-    id: s.id,
-    time: s.slot_time,
-    capacity: s.capacity,
-    filled: s.filled
-  })));
+  replaceArray(slotData, (data || []).map(s => ({id:s.id, time:s.slot_time, capacity:s.capacity, filled:s.filled})));
+  Object.entries(ALWAYS_OPEN_SLOT_DEFAULTS).forEach(([time, cap]) => {
+    const slot = slotData.find(s => s.time === time);
+    if(slot){ slot.filled = false; if(!slot.capacity || slot.capacity===0) slot.capacity = cap; }
+  });
 }
-
 async function loadHoursFromSupabase(){
   const { data, error } = await supabaseClient.from('opening_hours').select('*').order('sort_order');
   if(error) throw error;
-  replaceArray(hoursData, (data || []).map(h => ({
-    id: h.id,
-    day: h.day,
-    closed: h.closed,
-    open: h.open_time,
-    close: h.close_time
-  })));
+  replaceArray(hoursData, (data || []).map(h => ({id:h.id, day:h.day, closed:h.closed, open:h.open_time, close:h.close_time})));
 }
-
 async function loadGalleryFromSupabase(){
   const { data, error } = await supabaseClient.from('gallery_images').select('*').order('sort_order');
   if(error) throw error;
-  replaceArray(galleryImgs, (data || []).map(g => ({
-    id: g.id,
-    src: g.src,
-    cap: g.cap,
-    cls: g.cls || ''
-  })));
+  replaceArray(galleryImgs, (data || []).map(g => ({id:g.id, src:g.src, cap:g.cap, cls:g.cls||''})));
 }
-
 async function loadContactFromSupabase(){
-  const { data, error } = await supabaseClient.from('contact_info').select('*').eq('id', 1).maybeSingle();
+  const { data, error } = await supabaseClient.from('contact_info').select('*').eq('id',1).maybeSingle();
   if(error) throw error;
   if(data){
-    contactData.name = data.name;
-    contactData.addr1 = data.addr1;
-    contactData.addr2 = data.addr2;
-    contactData.phone = data.phone;
-    contactData.email = data.email;
-    contactData.web = data.web || '';
-    contactData.evName = data.ev_name || '';
-    contactData.evEmail = data.ev_email || '';
-    contactData.evPhone = data.ev_phone || '';
-    contactData.note = data.note || '';
+    contactData.name=data.name; contactData.addr1=data.addr1; contactData.addr2=data.addr2; contactData.phone=data.phone; contactData.email=data.email; contactData.web=data.web||'';
+    contactData.evName=data.ev_name||''; contactData.evEmail=data.ev_email||''; contactData.evPhone=data.ev_phone||''; contactData.note=data.note||'';
   }
 }
-
 async function loadJobsFromSupabase(){
   const { data, error } = await supabaseClient.from('jobs').select('*').order('sort_order');
   if(error) throw error;
-  replaceArray(jobsData, (data || []).map(j => ({
-    id: j.id,
-    title: j.title,
-    dept: j.dept,
-    type: j.type,
-    loc: j.loc,
-    desc: j.description
-  })));
+  replaceArray(jobsData, (data || []).map(j => ({id:j.id, title:j.title, dept:j.dept, type:j.type, loc:j.loc, desc:j.description})));
 }
-
 async function loadApplicationsFromSupabase(){
-  const { data, error } = await supabaseClient.from('applications').select('*').order('created_at', { ascending: false });
+  const { data, error } = await supabaseClient.from('applications').select('*').order('created_at', {ascending:false});
   if(error) throw error;
-  replaceArray(applications, (data || []).map(a => ({
-    id: a.id,
-    fname: a.fname,
-    lname: a.lname,
-    email: a.email,
-    phone: a.phone,
-    exp: a.exp,
-    note: a.note,
-    jobTitle: a.job_title,
-    jobDept: a.job_dept,
-    submitted: a.created_at,
-    status: a.status
-  })));
+  applications = (data || []).map(a => ({id:a.id, fname:a.fname, lname:a.lname, email:a.email, phone:a.phone, exp:a.exp, note:a.note, jobTitle:a.job_title, jobDept:a.job_dept, submitted:a.created_at, status:a.status}));
 }
-
+async function loadBookingsFromSupabase(){
+  const { data, error } = await supabaseClient.from('bookings').select('*').order('created_at', {ascending:false});
+  if(error){ console.error(error); toast('Failed to load bookings'); return; }
+  bookings = (data || []).map(b => ({id:b.id, ref:b.ref, date:b.booking_date, time:b.booking_time, adults:b.adults, children:b.children, infants:b.infants, guestStr:b.guest_str, occasion:b.occasion, fname:b.fname, lname:b.lname, email:b.email, phone:b.phone, notes:b.notes, status:b.status, created:b.created_at}));
+}
 async function loadAllPublicData(){
   await ensureSeedData();
-  await Promise.all([
-    loadMenuFromSupabase(),
-    loadSlotsFromSupabase(),
-    loadHoursFromSupabase(),
-    loadGalleryFromSupabase(),
-    loadContactFromSupabase(),
-    loadJobsFromSupabase()
-  ]);
+  await Promise.all([loadMenuFromSupabase(), loadSlotsFromSupabase(), loadHoursFromSupabase(), loadGalleryFromSupabase(), loadContactFromSupabase(), loadJobsFromSupabase()]);
 }
-
 async function syncMenuToSupabase(){
   const rows = serializeMenuData();
-  let { error } = await supabaseClient.from('menu_items').delete().gte('id', 0);
+  let { error } = await supabaseClient.from('menu_items').delete().gte('id',0);
   if(error) throw error;
-  if(rows.length){
-    ({ error } = await supabaseClient.from('menu_items').insert(rows));
-    if(error) throw error;
-  }
-  await loadMenuFromSupabase();
-  renderPubMenu();
+  if(rows.length){ ({ error } = await supabaseClient.from('menu_items').insert(rows)); if(error) throw error; }
+  await loadMenuFromSupabase(); renderPubMenu();
 }
-
 async function syncSlotsToSupabase(){
-  const rows = slotData.map((s, idx) => ({
-    slot_time: s.time,
-    capacity: s.capacity,
-    filled: s.filled,
-    sort_order: idx
-  }));
-  let { error } = await supabaseClient.from('slots').delete().gte('id', 0);
+  const rows = slotData.map((s, idx) => ({slot_time:s.time, capacity:s.capacity, filled:s.filled, sort_order:idx}));
+  let { error } = await supabaseClient.from('slots').delete().gte('id',0);
   if(error) throw error;
-  if(rows.length){
-    ({ error } = await supabaseClient.from('slots').insert(rows));
-    if(error) throw error;
-  }
-  await loadSlotsFromSupabase();
-  renderSlotGrid();
+  if(rows.length){ ({ error } = await supabaseClient.from('slots').insert(rows)); if(error) throw error; }
+  await loadSlotsFromSupabase(); renderSlotGrid();
 }
-
 async function syncHoursToSupabase(){
-  const rows = hoursData.map((h, idx) => ({
-    day: h.day,
-    closed: h.closed,
-    open_time: h.open,
-    close_time: h.close,
-    sort_order: idx
-  }));
-  let { error } = await supabaseClient.from('opening_hours').delete().gte('id', 0);
+  const rows = hoursData.map((h, idx) => ({day:h.day, closed:h.closed, open_time:h.open, close_time:h.close, sort_order:idx}));
+  let { error } = await supabaseClient.from('opening_hours').delete().gte('id',0);
   if(error) throw error;
-  if(rows.length){
-    ({ error } = await supabaseClient.from('opening_hours').insert(rows));
-    if(error) throw error;
-  }
-  await loadHoursFromSupabase();
-  renderPubHours();
+  if(rows.length){ ({ error } = await supabaseClient.from('opening_hours').insert(rows)); if(error) throw error; }
+  await loadHoursFromSupabase(); renderPubHours();
 }
-
 async function syncGalleryToSupabase(){
-  const rows = galleryImgs.map((g, idx) => ({
-    src: g.src,
-    cap: g.cap,
-    cls: g.cls || '',
-    sort_order: idx
-  }));
-  let { error } = await supabaseClient.from('gallery_images').delete().gte('id', 0);
+  const rows = galleryImgs.map((g, idx) => ({src:g.src, cap:g.cap, cls:g.cls||'', sort_order:idx}));
+  let { error } = await supabaseClient.from('gallery_images').delete().gte('id',0);
   if(error) throw error;
-  if(rows.length){
-    ({ error } = await supabaseClient.from('gallery_images').insert(rows));
-    if(error) throw error;
-  }
-  await loadGalleryFromSupabase();
-  renderGallery();
+  if(rows.length){ ({ error } = await supabaseClient.from('gallery_images').insert(rows)); if(error) throw error; }
+  await loadGalleryFromSupabase(); renderGallery();
 }
-
 async function syncJobsToSupabase(){
-  const rows = jobsData.map((j, idx) => ({
-    title: j.title,
-    dept: j.dept,
-    type: j.type,
-    loc: j.loc,
-    description: j.desc,
-    sort_order: idx
-  }));
-  let { error } = await supabaseClient.from('jobs').delete().gte('id', 0);
+  const rows = jobsData.map((j, idx) => ({title:j.title, dept:j.dept, type:j.type, loc:j.loc, description:j.desc, sort_order:idx}));
+  let { error } = await supabaseClient.from('jobs').delete().gte('id',0);
   if(error) throw error;
-  if(rows.length){
-    ({ error } = await supabaseClient.from('jobs').insert(rows));
-    if(error) throw error;
-  }
-  await loadJobsFromSupabase();
-  renderJobs();
+  if(rows.length){ ({ error } = await supabaseClient.from('jobs').insert(rows)); if(error) throw error; }
+  await loadJobsFromSupabase(); renderJobs();
 }
-
 async function saveContactToSupabase(){
-  const payload = {
-    id: 1,
-    name: contactData.name,
-    addr1: contactData.addr1,
-    addr2: contactData.addr2,
-    phone: contactData.phone,
-    email: contactData.email,
-    web: contactData.web,
-    ev_name: contactData.evName,
-    ev_email: contactData.evEmail,
-    ev_phone: contactData.evPhone,
-    note: contactData.note
-  };
+  const payload = {id:1, name:contactData.name, addr1:contactData.addr1, addr2:contactData.addr2, phone:contactData.phone, email:contactData.email, web:contactData.web, ev_name:contactData.evName, ev_email:contactData.evEmail, ev_phone:contactData.evPhone, note:contactData.note};
   const { error } = await supabaseClient.from('contact_info').upsert(payload);
   if(error) throw error;
-  await loadContactFromSupabase();
-  renderPublicContact();
+  await loadContactFromSupabase(); renderPublicContact();
 }
-
 async function initApp(){
   try{
     await loadAllPublicData();
-    renderPubHours();
-    renderPubMenu();
-    renderGallery();
-    renderSlotGrid();
-    renderJobs();
-    renderPublicContact();
+    await Promise.all([loadBookingsFromSupabase(), loadApplicationsFromSupabase()]);
   }catch(err){
     console.error('Init failed:', err);
     toast('Failed to load saved data');
-    renderPubHours();
-    renderPubMenu();
-    renderGallery();
-    renderSlotGrid();
-    renderJobs();
   }
+  renderPubHours(); renderPubMenu(); renderGallery(); renderSlotGrid(); renderJobs(); renderPublicContact(); applyTranslations();
 }
 
+
 // ══════════════ NAVIGATION ══════════════
-
-function go(id){
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
-  window.scrollTo(0, 0);
-
-  if (id === 'menu') renderPubMenu();
-  if (id === 'gallery') renderGallery();
-  if (id === 'contact') renderPubHours();
-  if (id === 'careers') renderJobs();
-
-  if (id === 'admin') {
-    loadBookingsFromSupabase().then(() => {
-      renderAdmin();
-    });
+async function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='menu') renderPubMenu();
+  if(id==='gallery') renderGallery();
+  if(id==='contact'){ renderPubHours(); renderPublicContact(); }
+  if(id==='careers') renderJobs();
+  if(id==='admin'){
+    await Promise.all([loadBookingsFromSupabase(), loadApplicationsFromSupabase(), loadJobsFromSupabase()]);
+    renderAdmin();
   }
 }
 
@@ -1167,7 +1337,7 @@ function renderSlotGrid(){
   document.getElementById('slot-grid').innerHTML=slotData.map((s,i)=>{
     const isFilled=s.filled||s.capacity===0;
     const cls=isFilled?'slot-filled':selectedSlot===s.time?'slot-selected':'';
-    const availTxt=isFilled?'Filled':(s.capacity===1?'1 seat left':s.capacity+' seats');
+    const availTxt=isFilled?t('filled'):(s.capacity===1?`1 ${t('seat')}`:s.capacity+' '+t('seats'));
     const clickAttr=isFilled?'':'onclick="selectSlot('+i+')"';
     return '<div class="slot-card '+cls+'" '+clickAttr+' data-idx="'+i+'">'
       +'<span class="slot-time">'+s.time+'</span>'
@@ -1190,38 +1360,24 @@ async function submitBooking(){
   const notes=document.getElementById('bk-notes').value.trim();
   const occasion=document.getElementById('bk-occasion').value;
   const err=document.getElementById('bk-error');
-  if(!date){err.textContent='Please select a date.';err.style.display='block';return;}
-  if(!selectedSlot){err.textContent='Please select a time slot.';err.style.display='block';return;}
-  if(!fname||!lname){err.textContent='Please enter your full name.';err.style.display='block';return;}
-  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';err.style.display='block';return;}
-  if(!phone){err.textContent='Please enter your phone number.';err.style.display='block';return;}
+  if(!date){err.textContent=t('date') + ' required.';err.style.display='block';return;}
+  if(!selectedSlot){err.textContent=t('select_slot') + ' required.';err.style.display='block';return;}
+  if(!fname||!lname){err.textContent=t('first_name') + ' / ' + t('last_name') + ' required.';err.style.display='block';return;}
+  if(!email||!email.includes('@')){err.textContent=t('email') + ' invalid.';err.style.display='block';return;}
+  if(!phone){err.textContent=t('phone') + ' required.';err.style.display='block';return;}
   err.style.display='none';
-  const gs=`${guestCounts.adults} adult${guestCounts.adults!==1?'s':''}${guestCounts.children>0?`, ${guestCounts.children} child${guestCounts.children!==1?'ren':''}` :''}${guestCounts.infants>0?`, ${guestCounts.infants} infant${guestCounts.infants!==1?'s':''}` :''}`;
+  const gs=`${guestCounts.adults} adult${guestCounts.adults!==1?'s':''}${guestCounts.children>0?`, ${guestCounts.children} child${guestCounts.children!==1?'ren':''}`:''}${guestCounts.infants>0?`, ${guestCounts.infants} infant${guestCounts.infants!==1?'s':''}`:''}`;
   const ref='VRD-'+Date.now();
-  const { error } = await supabaseClient.from('bookings').insert([{
-    ref,
-    booking_date:date,
-    booking_time:selectedSlot,
-    adults:guestCounts.adults,
-    children:guestCounts.children,
-    infants:guestCounts.infants,
-    guest_str:gs,
-    occasion,
-    fname,
-    lname,
-    email,
-    phone,
-    notes,
-    status:'pending'
-  }]);
+  const { error } = await supabaseClient.from('bookings').insert([{ref, booking_date:date, booking_time:selectedSlot, adults:guestCounts.adults, children:guestCounts.children, infants:guestCounts.infants, guest_str:gs, occasion, fname, lname, email, phone, notes, status:'pending'}]);
   if(error){err.textContent='Booking save failed: '+error.message;err.style.display='block';return;}
+  await loadBookingsFromSupabase();
   document.getElementById('cn-name').textContent=fname+' '+lname;
   document.getElementById('cn-details').textContent=gs+' on '+new Date(date).toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' at '+selectedSlot;
   document.getElementById('cn-email').textContent=email;
   document.getElementById('cn-ref').textContent=ref;
   document.getElementById('bk-form-wrap').style.display='none';
   document.getElementById('confirm-box').classList.add('show');
-  selectedSlot=null; 
+  selectedSlot=null;
 }
 
 // ══════════════ PUBLIC MENU ══════════════
@@ -1230,19 +1386,19 @@ let pubMenuTab=Object.keys(menuData)[0];
 
 function renderPubMenu(){
   const keys=Object.keys(menuData);
-  document.getElementById('pub-menu-tabs').innerHTML=keys.map(k=>`<button class="menu-tab${k===pubMenuTab?' active':''}" onclick="switchPub('${k}')">${menuData[k].label}</button>`).join('');
+  document.getElementById('pub-menu-tabs').innerHTML=keys.map(k=>`<button class="menu-tab${k===pubMenuTab?' active':''}" onclick="switchPub('${k}')">${translateCategoryLabel(k, menuData[k].label)}</button>`).join('');
   document.getElementById('pub-menu-body').innerHTML=keys.map(k=>`
     <div id="ptab-${k}" class="menu-cat${k===pubMenuTab?' active':''}">
-      <div class="menu-cat-title">${menuData[k].label}</div>
+      <div class="menu-cat-title">${translateCategoryLabel(k, menuData[k].label)}</div>
       <div class="menu-items">${menuData[k].items.map((it,i)=>{
         const imgEl=it.img
           ?`<img class="menu-item-img" src="${it.img}" alt="${it.name}" onclick="openMenuLB('${it.img}')" title="Click to enlarge"/>`
-          :`<div class="menu-item-img-placeholder">No photo</div>`;
+          :`<div class="menu-item-img-placeholder">${t('no_photo')}</div>`;
         return `<div class="menu-item">
           ${imgEl}
           <div class="menu-item-info">
             <h4>${it.name}</h4><p>${it.desc}</p>
-            <div class="menu-item-tags">${it.tags.map(t=>`<span class="tag ${tagCls[t]||''}">${t}</span>`).join('')}</div>
+            <div class="menu-item-tags">${it.tags.map(tag=>`<span class="tag ${tagCls[tag]||''}">${translateTag(tag)}</span>`).join('')}</div>
           </div>
           <div class="menu-price">₹${it.price.toLocaleString('en-IN')}</div>
         </div>`;
@@ -1261,14 +1417,14 @@ function renderPubHours(){
 // ══════════════ CAREERS ══════════════
 function renderJobs(){
   const el=document.getElementById('jobs-list');
-  if(jobsData.length===0){el.innerHTML='<div class="no-jobs">No vacancies at this time. Please check back soon!</div>';return;}
+  if(jobsData.length===0){el.innerHTML=`<div class="no-jobs">${t('no_jobs')}</div>`;return;}
   el.innerHTML=jobsData.map((j,i)=>`
     <div class="job-card">
       <div class="job-top">
         <div><div class="job-title">${j.title}</div>
           <div class="job-meta"><span class="jtag jt-dept">${j.dept}</span><span class="jtag jt-type">${j.type}</span><span class="jtag jt-loc">📍 ${j.loc}</span></div>
         </div>
-        <button class="job-apply" onclick="openApply(${i})">Apply Now</button>
+        <button class="job-apply" onclick="openApply(${i})">${t('apply_now')}</button>
       </div>
       <div class="job-desc">${j.desc}</div>
     </div>`).join('');
@@ -1281,6 +1437,9 @@ function openApply(i){
   document.getElementById('apply-success').classList.remove('show');
   document.getElementById('ap-error').style.display='none';
   ['ap-fname','ap-lname','ap-email','ap-phone','ap-exp','ap-note'].forEach(id=>document.getElementById(id).value='');
+  const applyLabels = document.querySelectorAll('#apply-form label');
+  if(applyLabels.length>=6){ applyLabels[0].textContent=t('first_name'); applyLabels[1].textContent=t('last_name'); applyLabels[2].textContent=t('email'); applyLabels[3].textContent=t('phone'); applyLabels[4].textContent=t('years_exp'); applyLabels[5].textContent=t('cover_note'); }
+  const applyBtn = document.querySelector('#apply-form .submit-btn'); if(applyBtn) applyBtn.textContent = t('submit_application');
   document.getElementById('apply-modal-bg').classList.add('open');
 }
 function closeApply(e){if(!e||e.target===document.getElementById('apply-modal-bg'))document.getElementById('apply-modal-bg').classList.remove('open');}
@@ -1292,59 +1451,20 @@ async function submitApp(){
   const exp=document.getElementById('ap-exp').value.trim();
   const note=document.getElementById('ap-note').value.trim();
   const err=document.getElementById('ap-error');
-  if(!fname||!lname){err.textContent='Please enter your full name.';err.style.display='block';return;}
-  if(!email||!email.includes('@')){err.textContent='Please enter a valid email.';err.style.display='block';return;}
-  if(!phone){err.textContent='Please enter your phone number.';err.style.display='block';return;}
+  if(!fname||!lname){err.textContent=t('first_name') + ' / ' + t('last_name') + ' required.';err.style.display='block';return;}
+  if(!email||!email.includes('@')){err.textContent=t('email') + ' invalid.';err.style.display='block';return;}
+  if(!phone){err.textContent=t('phone') + ' required.';err.style.display='block';return;}
   err.style.display='none';
-  const { error } = await supabaseClient.from('applications').insert([{
-    fname,lname,email,phone,exp,note,
-    job_title: jobsData[applyJobIdx].title,
-    job_dept: jobsData[applyJobIdx].dept,
-    status:'new'
-  }]);
+  const { error } = await supabaseClient.from('applications').insert([{fname,lname,email,phone,exp,note,job_title:jobsData[applyJobIdx].title,job_dept:jobsData[applyJobIdx].dept,status:'new'}]);
   if(error){err.textContent=error.message;err.style.display='block';return;}
   await loadApplicationsFromSupabase();
   document.getElementById('apply-form').style.display='none';
   document.getElementById('apply-success').classList.add('show');
 }
 
-async function loadBookingsFromSupabase(){
-  const { data, error } = await supabaseClient
-    .from('bookings')
-    .select('*')
-    .order('created_at', { ascending: false });
-
-  if(error){
-    console.error('Failed to load bookings:', error);
-    toast('Failed to load bookings');
-    return;
-  }
-
-  bookings = data.map(b => ({
-    id: b.id,
-    ref: b.ref,
-    date: b.booking_date,
-    time: b.booking_time,
-    adults: b.adults,
-    children: b.children,
-    infants: b.infants,
-    guestStr: b.guest_str,
-    occasion: b.occasion,
-    fname: b.fname,
-    lname: b.lname,
-    email: b.email,
-    phone: b.phone,
-    notes: b.notes,
-    status: b.status,
-    created: b.created_at
-  }));
-}
-
 // ══════════════ ADMIN ══════════════
 async function adminLogin(){
-  const user=document.getElementById('adm-user').value.trim();
-  const pass=document.getElementById('adm-pass').value.trim();
-  if(user==='admin'&&pass==='verdana2024'){
+  if(document.getElementById('adm-user').value.trim()==='admin'&&document.getElementById('adm-pass').value.trim()==='verdana2024'){
     admLoggedIn=true;
     document.getElementById('adm-err').style.display='none';
     document.getElementById('adm-login').style.display='none';
@@ -1371,6 +1491,7 @@ function admTab(name,btn){
   if(name==='gallery-editor') renderGalleryEditor();
   if(name==='contact-editor') renderContactEditor();
   if(name==='applications') renderAppsAdmin();
+  
 }
 function renderAdmin(){
   if(!admLoggedIn) return;
@@ -1379,30 +1500,30 @@ function renderAdmin(){
   const f=bookings.filter(b=>b.status==='filled').length;
   const r=bookings.filter(b=>b.status==='rejected').length;
   document.getElementById('adm-stats').innerHTML=`
-    <div class="adm-stat"><div class="adm-stat-num">${bookings.length}</div><div class="adm-stat-lbl">Total</div></div>
-    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--gold)">${p}</div><div class="adm-stat-lbl">Pending</div></div>
-    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--sage-dark)">${c}</div><div class="adm-stat-lbl">Confirmed</div></div>
-    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--muted)">${f+r}</div><div class="adm-stat-lbl">Closed/Rejected</div></div>`;
+    <div class="adm-stat"><div class="adm-stat-num">${bookings.length}</div><div class="adm-stat-lbl">${t('total')}</div></div>
+    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--gold)">${p}</div><div class="adm-stat-lbl">${t('pending')}</div></div>
+    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--sage-dark)">${c}</div><div class="adm-stat-lbl">${t('confirmed')}</div></div>
+    <div class="adm-stat"><div class="adm-stat-num" style="color:var(--muted)">${f+r}</div><div class="adm-stat-lbl">${t('closed_rejected')}</div></div>`;
   renderBkTable();
 }
 function filterBk(f,btn){bkFilter=f;document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderBkTable();}
 function renderBkTable(){
   const el=document.getElementById('bk-container');
   const list=bkFilter==='all'?bookings:bookings.filter(b=>b.status===bkFilter);
-  if(list.length===0){el.innerHTML=`<div class="empty-st">No ${bkFilter==='all'?'':bkFilter+' '}reservations found.</div>`;return;}
+  if(list.length===0){el.innerHTML=`<div class="empty-st">${bkFilter==='all'?t('no_reservations_found'):t('no_filter_reservations',{status:t(bkFilter)})}</div>`;return;}
   el.innerHTML=`<table class="dt"><thead><tr><th>Ref</th><th>Guest</th><th>Date & Time</th><th>Guests</th><th>Contact</th><th>Status</th><th>Actions</th></tr></thead><tbody>
   ${list.map(b=>{
     const i=bookings.indexOf(b);
-    const kidBadge=(b.children>0||b.infants>0)?` <span style="background:#eef4ee;color:#3d5c41;font-size:.6rem;padding:1px 6px;border-radius:2px">Kids</span>`:'';
+    const kidBadge=(b.children>0||b.infants>0)?` <span style="background:#eef4ee;color:#3d5c41;font-size:.6rem;padding:1px 6px;border-radius:2px">${t('kids')}</span>`:'';
     let acts='';
     if(b.status==='pending'){
-      acts=`<button class="ab ag" onclick="updBk(${i},'confirmed')">Confirm</button><button class="ab aa" onclick="updBk(${i},'filled')">Mark Filled</button><button class="ab ar" onclick="updBk(${i},'rejected')">Reject</button>`;
+      acts=`<button class="ab ag" onclick="updBk(${i},'confirmed')">${t('confirm')}</button><button class="ab aa" onclick="updBk(${i},'filled')">${t('mark_filled')}</button><button class="ab ar" onclick="updBk(${i},'rejected')">${t('reject')}</button>`;
     } else if(b.status==='confirmed'){
-      acts=`<button class="ab aa" onclick="updBk(${i},'filled')">Mark Filled</button><button class="ab ar" onclick="updBk(${i},'rejected')">Reject</button>`;
+      acts=`<button class="ab aa" onclick="updBk(${i},'filled')">${t('mark_filled')}</button><button class="ab ar" onclick="updBk(${i},'rejected')">${t('reject')}</button>`;
     } else if(b.status==='filled'){
-      acts=`<button class="ab ar" onclick="clearBk(${i})" title="Clear data (visit complete)">Clear Data</button>`;
+      acts=`<button class="ab ar" onclick="clearBk(${i})" title="Clear data (visit complete)">${t('clear_data')}</button>`;
     } else {
-      acts=`<button class="ab ar" onclick="clearBk(${i})">Delete</button>`;
+      acts=`<button class="ab ar" onclick="clearBk(${i})">${t('delete')}</button>`;
     }
     return `<tr>
       <td style="font-family:var(--fd);color:var(--sage-dark)">${b.ref}</td>
@@ -1418,17 +1539,17 @@ function renderBkTable(){
 async function updBk(i,status){
   const b = bookings[i];
   const { error } = await supabaseClient.from('bookings').update({ status }).eq('id', b.id);
-  if(error){toast('Update failed'); console.error(error); return;}
-  bookings[i].status=status;renderAdmin();toast('Reservation updated');
+  if(error){ console.error(error); toast('Update failed'); return; }
+  bookings[i].status=status;renderAdmin();toast(t('reservation_updated'));
 }
 async function clearBk(i){
   if(!confirm('Permanently delete this guest\'s personal data? This cannot be undone.')) return;
   const b=bookings[i];
   const updates = { fname:'[Deleted]', lname:'', email:'[Deleted]', phone:'[Deleted]', notes:'', status:'filled' };
   const { error } = await supabaseClient.from('bookings').update(updates).eq('id', b.id);
-  if(error){toast('Clear failed'); console.error(error); return;}
+  if(error){ console.error(error); toast('Clear failed'); return; }
   Object.assign(b, updates);
-  renderAdmin();toast('Guest data cleared');
+  renderAdmin();toast(t('guest_data_cleared'));
 }
 
 // ── MENU EDITOR ──
@@ -1491,20 +1612,22 @@ async function saveMed(cat,i){
   it.tags=tag?[tag]:[];
   const urlVal=document.getElementById(`mi-${cat}-${i}`).value.trim();
   if(urlVal&&urlVal!=='[uploaded]') it.img=urlVal;
-  try{
-    await syncMenuToSupabase();
-    renderMenuEditor();
-    toast('Item saved');
-  }catch(err){console.error(err);toast('Failed to save item');}
+  try{ await syncMenuToSupabase(); renderMenuEditor(); toast('Item saved'); }catch(err){ console.error(err); toast('Failed to save item'); }
 }
 async function delMed(cat,i){
   if(!confirm('Delete this item?'))return;
   menuData[cat].items.splice(i,1);
-  try{
-    await syncMenuToSupabase();
-    renderMenuEditor();
-    toast('Item removed');
-  }catch(err){console.error(err);toast('Failed to remove item');}
+  try{ await syncMenuToSupabase(); renderMenuEditor(); toast('Item removed'); }catch(err){ console.error(err); toast('Failed to remove item'); }
+}
+async function addMed(cat){
+  const name=document.getElementById(`new-mn-${cat}`).value.trim();
+  const desc=document.getElementById(`new-md-${cat}`).value.trim();
+  const price=parseInt(document.getElementById(`new-mp-${cat}`).value)||0;
+  const tag=document.getElementById(`new-mt-${cat}`).value;
+  const img=document.getElementById(`new-mi-${cat}`).value.trim();
+  if(!name){toast('Please enter a dish name');return;}
+  menuData[cat].items.push({name,desc,price,tags:tag?[tag]:[],img});
+  try{ await syncMenuToSupabase(); renderMenuEditor(); toast('New item added to '+menuData[cat].label); }catch(err){ console.error(err); toast('Failed to add item'); }
 }
 
 // ── SLOT MANAGER ──
@@ -1533,10 +1656,11 @@ async function saveSlots(){
     s.capacity=parseInt(document.getElementById(`sc-${i}`).value)||0;
     s.filled=document.getElementById(`sf-${i}`).checked||s.capacity===0;
   });
-  try{
-    await syncSlotsToSupabase();
-    toast('Slot settings saved');
-  }catch(err){console.error(err);toast('Failed to save slots');}
+  Object.entries(ALWAYS_OPEN_SLOT_DEFAULTS).forEach(([time, cap]) => {
+    const slot = slotData.find(s => s.time === time);
+    if(slot){ slot.filled = false; if(!slot.capacity || slot.capacity===0) slot.capacity = cap; }
+  });
+  try{ await syncSlotsToSupabase(); toast('Slot settings saved'); }catch(err){ console.error(err); toast('Failed to save slots'); }
 }
 
 // ── HOURS EDITOR ──
@@ -1553,24 +1677,57 @@ function renderHrsEditor(){
 }
 function togDay(i){const cl=document.getElementById(`hcl-${i}`).checked;document.getElementById(`ho-${i}`).disabled=cl;document.getElementById(`hc-${i}`).disabled=cl;}
 async function saveHrs(){
-  hoursData.forEach((h,i)=>{
-    h.closed=document.getElementById(`hcl-${i}`).checked;
-    h.open=document.getElementById(`ho-${i}`).value;
-    h.close=document.getElementById(`hc-${i}`).value;
-  });
-  try{
-    await syncHoursToSupabase();
-    toast('Opening hours saved');
-  }catch(err){console.error(err);toast('Failed to save hours');}
+  hoursData.forEach((h,i)=>{h.closed=document.getElementById(`hcl-${i}`).checked;h.open=document.getElementById(`ho-${i}`).value;h.close=document.getElementById(`hc-${i}`).value;});
+  try{ await syncHoursToSupabase(); toast('Opening hours saved'); }catch(err){ console.error(err); toast('Failed to save hours'); }
+}
+
+// ── APPLICATIONS ADMIN ──
+function toggleAddJob(){const f=document.getElementById('add-job-form');f.style.display=f.style.display==='none'?'block':'none';}
+async function addJob(){
+  const title=document.getElementById('nj-title').value.trim();
+  const dept=document.getElementById('nj-dept').value;
+  const type=document.getElementById('nj-type').value;
+  const loc=document.getElementById('nj-loc').value.trim();
+  const desc=document.getElementById('nj-desc').value.trim();
+  if(!title||!desc){toast('Please fill in title and description');return;}
+  jobsData.push({title,dept,type,loc,desc});
+  toggleAddJob();
+  ['nj-title','nj-loc','nj-desc'].forEach(id=>document.getElementById(id).value='');
+  try{ await syncJobsToSupabase(); renderAppsAdmin(); toast('Vacancy published'); }catch(err){ console.error(err); toast('Failed to publish vacancy'); }
 }
 async function removeJob(i){
   if(!confirm('Remove this vacancy?'))return;
   jobsData.splice(i,1);
-  try{
-    await syncJobsToSupabase();
-    renderAppsAdmin();
-    toast('Vacancy removed');
-  }catch(err){console.error(err);toast('Failed to remove vacancy');}
+  try{ await syncJobsToSupabase(); renderAppsAdmin(); toast('Vacancy removed'); }catch(err){ console.error(err); toast('Failed to remove vacancy'); }
+}
+async function updApp(i,status){
+  const a = applications[i];
+  const { error } = await supabaseClient.from('applications').update({ status }).eq('id', a.id);
+  if(error){ console.error(error); toast('Application update failed'); return; }
+  applications[i].status=status;renderAppsAdmin();toast('Application '+status);
+}
+function renderAppsAdmin(){
+  let html=`<div style="font-size:.73rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem">Current Vacancies (${jobsData.length})</div>`;
+  html+=`<table class="dt" style="margin-bottom:2rem"><thead><tr><th>Title</th><th>Department</th><th>Type</th><th>Location</th><th>Actions</th></tr></thead><tbody>
+  ${jobsData.map((j,i)=>`<tr><td><strong>${j.title}</strong><br><span style="font-size:.76rem;color:var(--muted)">${j.desc.slice(0,50)}…</span></td><td>${j.dept}</td><td>${j.type}</td><td>${j.loc}</td><td><button class="ab ar" onclick="removeJob(${i})">Remove</button></td></tr>`).join('')}
+  </tbody></table>`;
+  html+=`<div style="font-size:.73rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem">Received Applications (${applications.length})</div>`;
+  if(applications.length===0){html+=`<div class="empty-st">No applications received yet.</div>`;}
+  else{
+    html+=`<table class="dt"><thead><tr><th>Applicant</th><th>Position</th><th>Contact</th><th>Experience</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+    ${applications.map((a,i)=>`<tr>
+      <td><strong>${a.fname} ${a.lname}</strong>${a.note?`<br><span style="font-size:.74rem;color:var(--muted)">${a.note.slice(0,35)}…</span>`:''}</td>
+      <td>${a.jobTitle}<br><span style="font-size:.74rem;color:var(--muted)">${a.jobDept}</span></td>
+      <td>${a.email}<br><span style="font-size:.74rem;color:var(--muted)">${a.phone}</span></td>
+      <td style="font-size:.83rem">${a.exp||'—'}</td>
+      <td style="font-size:.79rem">${a.submitted}</td>
+      <td><span class="badge b${a.status[0]}">${a.status}</span></td>
+      <td><button class="ab ag" onclick="updApp(${i},'shortlisted')">Shortlist</button><button class="ab ar" onclick="updApp(${i},'rejected')">Reject</button></td>
+    </tr>`).join('')}
+    </tbody></table>`;
+  }
+
+  document.getElementById('apps-container').innerHTML=html;
 }
 
 // ── GALLERY EDITOR ──
@@ -1620,32 +1777,20 @@ async function addGalleryPhoto(){
   if(!src){toast('Please enter an image URL or upload a file');return;}
   if(!cap){toast('Please enter a caption');return;}
   galleryImgs.push({src,cap,cls});
-  try{
-    await syncGalleryToSupabase();
-    renderGalleryEditor();
-    toggleAddPhoto();
-    toast('Photo added to gallery');
-  }catch(err){console.error(err);toast('Failed to add photo');}
+  try{ await syncGalleryToSupabase(); renderGalleryEditor(); toggleAddPhoto(); toast('Photo added to gallery'); }catch(err){ console.error(err); toast('Failed to add photo'); }
 }
 
 async function movePhoto(i,dir){
   const j=i+dir;
   if(j<0||j>=galleryImgs.length) return;
   [galleryImgs[i],galleryImgs[j]]=[galleryImgs[j],galleryImgs[i]];
-  try{
-    await syncGalleryToSupabase();
-    renderGalleryEditor();
-  }catch(err){console.error(err);toast('Failed to reorder photo');}
+  try{ await syncGalleryToSupabase(); renderGalleryEditor(); }catch(err){ console.error(err); toast('Failed to reorder photo'); }
 }
 
 async function deletePhoto(i){
   if(!confirm('Remove this photo from the gallery?')) return;
   galleryImgs.splice(i,1);
-  try{
-    await syncGalleryToSupabase();
-    renderGalleryEditor();
-    toast('Photo removed');
-  }catch(err){console.error(err);toast('Failed to remove photo');}
+  try{ await syncGalleryToSupabase(); renderGalleryEditor(); toast('Photo removed'); }catch(err){ console.error(err); toast('Failed to remove photo'); }
 }
 
 async function editPhotoCaption(i){
@@ -1653,10 +1798,7 @@ async function editPhotoCaption(i){
   const newCls=document.getElementById('gc-cls-'+i).value;
   galleryImgs[i].cap=newCap;
   galleryImgs[i].cls=newCls;
-  try{
-    await syncGalleryToSupabase();
-    toast('Photo updated');
-  }catch(err){console.error(err);toast('Failed to update photo');}
+  try{ await syncGalleryToSupabase(); toast('Photo updated'); }catch(err){ console.error(err); toast('Failed to update photo'); }
 }
 
 function renderGalleryEditor(){
@@ -1714,10 +1856,7 @@ async function saveContact(){
   contactData.evEmail=document.getElementById('ct-ev-email').value.trim();
   contactData.evPhone=document.getElementById('ct-ev-phone').value.trim();
   contactData.note=document.getElementById('ct-note').value.trim();
-  try{
-    await saveContactToSupabase();
-    toast('Contact info saved — Contact page updated');
-  }catch(err){console.error(err);toast('Failed to save contact info');}
+  try{ await saveContactToSupabase(); toast('Contact info saved — Contact page updated'); }catch(err){ console.error(err); toast('Failed to save contact info'); }
 }
 
 function renderPublicContact(){
@@ -1726,13 +1865,13 @@ function renderPublicContact(){
   // We re-render the whole contact page sections
   const items=document.querySelectorAll('.ci .ci-txt');
   if(items.length>=3){
-    items[0].innerHTML='<strong>Address</strong><span>'+contactData.addr1+'<br>'+contactData.addr2+'</span>';
-    items[1].innerHTML='<strong>Phone</strong><span>'+contactData.phone+'</span>';
-    items[2].innerHTML='<strong>Email</strong><span>'+contactData.email+'</span>';
+    items[0].innerHTML='<strong>'+t('address')+'</strong><span>'+contactData.addr1+'<br>'+contactData.addr2+'</span>';
+    items[1].innerHTML='<strong>'+t('phone')+'</strong><span>'+contactData.phone+'</span>';
+    items[2].innerHTML='<strong>'+t('email')+'</strong><span>'+contactData.email+'</span>';
   }
   const evItems=document.querySelectorAll('.ci .ci-txt');
   if(evItems.length>=4){
-    evItems[3].innerHTML='<strong>Events Manager</strong><span>'+contactData.evName+' · '+contactData.evEmail+(contactData.evPhone?' · '+contactData.evPhone:'')+'</span>';
+    evItems[3].innerHTML='<strong>'+t('events_manager')+'</strong><span>'+contactData.evName+' · '+contactData.evEmail+(contactData.evPhone?' · '+contactData.evPhone:'')+'</span>';
   }
 }
 
